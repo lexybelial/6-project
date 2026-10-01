@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Новая реальность — октябрь 2026 · март 2027</title>
+<meta name="description" content="Личный проект на 6 месяцев: цели, принципы, распорядок и вехи.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#121213;
+    --surface:#1b1b1d;
+    --surface-2:#232326;
+    --line:#2c2c30;
+    --text:#ececea;
+    --muted:#8d8d92;
+    --pearl:#d9d5cc;
+    --radius-lg:22px;
+    --radius-md:16px;
+    --wrap:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font:400 16px/1.6 "Manrope",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  img{display:block;max-width:100%}
+  a{color:inherit}
+  .wrap{width:min(var(--wrap),100% - 32px);margin-inline:auto}
+  h1,h2{font-family:"Unbounded",sans-serif;font-weight:300;text-transform:uppercase;letter-spacing:-.01em;line-height:1.08}
+  h2{font-size:clamp(30px,4.6vw,52px)}
+  h3{font-weight:600;font-size:17px;line-height:1.35}
+  section{padding:110px 0 0}
+  :focus-visible{outline:2px solid var(--pearl);outline-offset:3px;border-radius:8px}
+
+  /* nav */
+  nav{position:sticky;top:0;z-index:10;background:rgba(18,18,19,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+  .brand{font-family:"Unbounded";font-weight:400;font-size:13px;text-decoration:none}
+  nav ul{display:flex;gap:26px;list-style:none;font-size:14px;color:var(--muted)}
+  nav ul a{text-decoration:none}
+  nav ul a:hover{color:var(--text)}
+
+  /* hero */
+  .hero{padding-top:56px}
+  .hero .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:56px;align-items:center}
+  .hero-photo{position:relative;aspect-ratio:4/5;border-radius:var(--radius-lg);overflow:hidden;background:radial-gradient(120% 90% at 30% 20%,#2e2e31,#151516 70%)}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05) brightness(.9)}
+  .hero-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,var(--bg) 100%)}
+  .hero h1{font-size:clamp(34px,5.2vw,64px)}
+  .tags{display:flex;flex-wrap:wrap;gap:10px;margin:26px 0 24px}
+  .tag{border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:13px;color:var(--muted)}
+  .lead{color:var(--muted);max-width:46ch}
+  .actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:30px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:10px;padding:12px 22px;border-radius:12px;font-weight:600;font-size:14px;text-decoration:none;transition:background .2s,color .2s}
+  .btn-solid{background:var(--text);color:var(--bg)}
+  .btn-solid:hover{background:var(--pearl)}
+  .btn-ghost{color:var(--text);padding-inline:6px}
+  .btn-ghost:hover{color:var(--pearl)}
+  .progress{margin-top:42px;padding-top:24px;border-top:1px solid var(--line)}
+  .progress-top{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);margin-bottom:12px}
+  .progress-top b{color:var(--text);font-weight:600}
+  .bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+  .bar i{display:block;height:100%;width:0;background:var(--pearl);border-radius:99px;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
+
+  /* goals */
+  .head-row{display:flex;flex-direction:column;align-items:flex-start;gap:18px;margin-bottom:44px}
+  .head-row p{color:var(--muted);max-width:60ch;font-size:16px}
+  .goals{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .goal{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:26px 22px 24px;display:flex;flex-direction:column;gap:14px;min-height:230px}
+  .goal .ico{width:44px;height:44px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center}
+  .goal .ico svg{width:20px;height:20px;stroke:var(--text);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+  .goal .area{font-size:13px;color:var(--muted)}
+  .goal p{font-size:14px;color:var(--muted)}
+  .goal.main{grid-column:span 3;background:linear-gradient(140deg,#2a2926,#1b1b1d 70%);border-color:#4a4740}
+  .goal.main h3{font-family:"Unbounded";font-weight:300;font-size:clamp(20px,2.2vw,26px);line-height:1.25}
+  .goal.main .ico{background:var(--pearl)}
+  .goal.main .ico svg{stroke:var(--bg)}
+  .goal.main .area{color:var(--pearl)}
+
+  /* signals */
+  .signals{display:grid;grid-template-columns:170px 1.35fr 1fr;gap:36px;align-items:stretch;margin-top:48px}
+  .tabs{display:flex;flex-direction:column;gap:14px;padding-top:6px}
+  .tabs button{all:unset;cursor:pointer;color:var(--muted);font-size:15px;transition:color .2s}
+  .tabs button[aria-selected="true"],.tabs button:hover{color:var(--text)}
+  .tabs button[aria-selected="true"]::before{content:"";display:inline-block;width:18px;height:1px;background:var(--text);vertical-align:middle;margin-right:10px}
+  .sig-photo{border-radius:var(--radius-lg);overflow:hidden;min-height:300px;background:radial-gradient(100% 100% at 50% 30%,#d6d2ca,#9c9890)}
+  .sig-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1)}
+  .sig-text{display:flex;flex-direction:column;justify-content:space-between;gap:24px}
+  .sig-text h3{font-size:22px;font-weight:500}
+  .sig-text p{color:var(--muted);font-size:15px;margin-top:14px}
+  .sig-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+  .sig-meta b{color:var(--text);font-weight:500}
+  .sig-panel[hidden]{display:none}
+
+  /* principles */
+  .principles{position:relative}
+  .principles .wrap{display:grid;grid-template-columns:1fr 1fr;gap:56px;position:relative;z-index:1}
+  .principles .wrap > div:first-child{align-self:start;position:sticky;top:90px}
+  .principles .rule{height:1px;background:var(--line);margin:30px 0 24px;max-width:340px}
+  .principles .intro{color:var(--muted);max-width:44ch;font-size:15px}
+  .principles .intro b{color:var(--text);font-weight:500}
+  .wave{position:absolute;left:0;right:0;top:46%;width:100%;height:220px;pointer-events:none}
+  .p-list{display:flex;flex-direction:column;gap:14px}
+  .p-card{background:rgba(27,27,29,.92);border:1px solid var(--line);border-radius:var(--radius-md);padding:20px 22px;display:grid;grid-template-columns:1fr 54px;gap:18px;align-items:center}
+  .p-card h3{font-size:16px}
+  .p-card p{color:var(--muted);font-size:14px;margin-top:6px}
+  .p-card .mark{width:54px;height:54px;border-radius:50%;background:var(--surface-2);display:grid;place-items:center;font-family:"Unbounded";font-size:15px;color:var(--pearl)}
+
+  .motto{font-family:"Unbounded";font-weight:300;font-size:clamp(20px,2.4vw,28px);line-height:1.3;color:var(--pearl);max-width:16ch;margin-bottom:26px}
+  mark{white-space:nowrap;background:rgba(217,213,204,.22);color:var(--text);padding:1px 5px;border-radius:5px;box-shadow:inset 0 -2px 0 var(--pearl)}
+  .badge{display:inline-block;font-size:11px;font-weight:600;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+  .badge-main{background:var(--pearl);color:var(--bg)}
+  .badge-new{border:1px solid var(--pearl);color:var(--pearl)}
+  .p-card.key{background:linear-gradient(140deg,#2a2926,#1b1b1d 75%);border-color:#4a4740;padding:26px 24px}
+  .p-card.key h3{font-family:"Unbounded";font-weight:300;font-size:20px}
+  .p-card.key .mark{background:var(--pearl);color:var(--bg)}
+
+  /* habits */
+  .habits{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:start}
+  .hyp{color:var(--muted);font-size:15px;margin-bottom:22px;max-width:62ch}
+  .hyp b{color:var(--text);font-weight:500}
+  .h-list{list-style:none;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+  .h-list li{padding:18px 0;border-bottom:1px solid var(--line)}
+  .h-list li p{color:var(--muted);font-size:14px;margin-top:4px}
+  .h-list li.h-main{background:linear-gradient(140deg,#2a2926,#1b1b1d 75%);border:1px solid #4a4740;border-radius:var(--radius-md);padding:22px;margin:16px 0 4px}
+  .h-list li.h-main h3{font-family:"Unbounded";font-weight:300;font-size:19px;line-height:1.3}
+  .dots-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;position:sticky;top:90px}
+  .dots{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:6px}
+  .dots i{aspect-ratio:1;border-radius:50%;border:1px solid #3a3a3e}
+  .dots i.on{background:var(--pearl);border-color:var(--pearl)}
+  .dots i.today{box-shadow:0 0 0 3px rgba(217,213,204,.25)}
+  .dots-card figcaption{margin-top:22px;display:flex;flex-direction:column;gap:6px}
+  .dots-card figcaption b{font-family:"Unbounded";font-weight:300;font-size:22px;color:var(--pearl)}
+  .dots-card figcaption span{color:var(--muted);font-size:14px}
+  em{font-style:italic;color:var(--text)}
+
+  /* schedule */
+  .day{margin-top:48px;border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden}
+  .slot{display:grid;grid-template-columns:150px 1fr;gap:24px;padding:20px 28px;border-top:1px solid var(--line);align-items:baseline}
+  .slot:first-child{border-top:0}
+  .slot time{font-family:"Unbounded";font-weight:300;font-size:15px;color:var(--pearl)}
+  .slot p{color:var(--muted);font-size:15px}
+  .slot p b{color:var(--text);font-weight:500}
+  .slot.focus{background:var(--surface)}
+  .slot.weekend{background:var(--surface-2)}
+
+  /* milestones */
+  .months{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-top:48px;border-top:1px solid var(--line)}
+  .month{padding:22px 18px 0 0;position:relative}
+  .month::before{content:"";position:absolute;top:-5px;left:0;width:9px;height:9px;border-radius:50%;background:var(--muted)}
+  .month.finish::before{background:var(--pearl);box-shadow:0 0 0 5px rgba(217,213,204,.15)}
+  .month h3{font-family:"Unbounded";font-weight:300;font-size:16px;margin-bottom:14px}
+  .month.finish h3{color:var(--pearl)}
+  .month ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .month li{font-size:14px;color:var(--muted);line-height:1.45}
+
+  /* footer */
+  .closing{margin-top:120px;position:relative;border-radius:var(--radius-lg);overflow:hidden;min-height:340px;display:flex;align-items:center;background:radial-gradient(120% 120% at 70% 20%,#2c2c2f,#141415 70%)}
+  .closing img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(1) brightness(.45)}
+  .closing-in{position:relative;padding:56px 48px;max-width:680px}
+  .closing h2{font-size:clamp(24px,3.4vw,38px)}
+  .closing p{color:#bdbdb8;margin-top:16px;font-size:15px}
+  .closing .actions{margin-top:24px}
+  footer{padding:40px 0 48px;color:var(--muted);font-size:13px}
+  footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  @media (max-width:960px){
+    .goals{grid-template-columns:repeat(2,1fr)} .goal.main{grid-column:span 2}
+    .signals{grid-template-columns:1fr}
+    .tabs{flex-direction:row;flex-wrap:wrap;gap:10px 20px}
+    .principles .wrap{grid-template-columns:1fr;gap:36px}
+    .principles .wrap > div:first-child{position:static}
+    .habits{grid-template-columns:1fr;gap:32px}
+    .dots-card{position:static}
+    .months{grid-template-columns:repeat(3,1fr);row-gap:36px}
+  }
+  @media (max-width:720px){
+    nav ul{display:none}
+    section{padding-top:80px}
+    .hero .wrap{grid-template-columns:1fr;gap:32px}
+    .hero-photo{aspect-ratio:4/3}
+    .goals{grid-template-columns:1fr}
+    .goal.main{grid-column:auto}
+    .goal{min-height:0}
+    .slot{grid-template-columns:1fr;gap:4px;padding:18px 20px}
+    .months{grid-template-columns:1fr 1fr}
+    .closing-in{padding:28px 22px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .bar i{transition:none}
+  }
+</style>
+</head>
+<body>
+
+<nav aria-label="Разделы">
+  <div class="wrap">
+    <a class="brand" href="#top">Новая реальность</a>
+    <ul>
+      <li><a href="#goals">Цели</a></li>
+      <li><a href="#signals">Как пойму</a></li>
+      <li><a href="#principles">Принципы</a></li>
+      <li><a href="#habits">Привычки</a></li>
+      <li><a href="#day">Распорядок</a></li>
+      <li><a href="#months">Вехи</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-photo">
+      <img src="https://images.pexels.com/photos/19481976/pexels-photo-19481976.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Чёрно-белый портрет женщины в полутени" onerror="this.remove()">
+    </div>
+    <div>
+      <h1>Я девушка, у&nbsp;которой получается</h1>
+      <div class="tags">
+        <span class="tag">Октябрь 2026</span>
+        <span class="tag">Март 2027</span>
+        <span class="tag">6 месяцев</span>
+      </div>
+      <p class="lead">Я запускаю этот проект, чтобы за 6 месяцев создать свою новую реальность: перестроить мышление по новому девизу и принципам — и сделать реальными результаты, которые раньше были мне недоступны.</p>
+      <div class="actions">
+        <a class="btn btn-solid" href="#goals">Смотреть цели</a>
+        <a class="btn btn-ghost" href="#day">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Распорядок дня
+        </a>
+      </div>
+      <div class="progress" aria-live="polite">
+        <div class="progress-top"><span id="dayLabel">Путь начинается 1 октября</span><b id="pct">0%</b></div>
+        <div class="bar"><i id="barFill"></i></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="goals">
+  <div class="wrap">
+    <div class="head-row">
+      <h2>Мои цели</h2>
+      <p>Результаты на материи. Так выглядит моя жизнь в конце марта: главная цель — рабочий кейс, остальные поддерживают меня и мою базу.</p>
+    </div>
+    <div class="goals">
+      <article class="goal main">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></div>
+        <span class="area">SEO-платформа · главное</span>
+        <h3>Лицензирование на первой странице поиска — кейс в портфолио</h3>
+        <p>Статьи блога индексируются. У каждой страницы каталога есть своя утверждённая страница с реализованными ключевыми моментами.</p>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+        <span class="area">ТехМедПортал</span>
+        <h3>Дизайн согласован, проект в руках команды программистов</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg></div>
+        <span class="area">Режим и здоровье</span>
+        <h3>Высыпаюсь: отбой 22:00, подъём 6:00, ем 3 раза в день домашнюю еду</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3c-4 4-4 8 0 12 4-4 4-8 0-12zM12 15v6M8 21h8"/></svg></div>
+        <span class="area">Красота</span>
+        <h3>Знаю, как ухаживать за волосами, хожу на работу красивой</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4"/></svg></div>
+        <span class="area">Тексты</span>
+        <h3>Стажировка пройдена, пишу тексты каждую неделю</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/></svg></div>
+        <span class="area">Внутренняя работа</span>
+        <h3>Наблюдения и ретроспективы — привычка, Мягкая Сила пройдена</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 5h9M8.5 3v2M6 5c0 4 3 7 6 8M11 5c0 4-3 8-7 9M13 21l4-10 4 10M14.5 17h5"/></svg></div>
+        <span class="area">Английский</span>
+        <h3>Занимаюсь каждую неделю без исключений — это привычка</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18M16 15h2"/></svg></div>
+        <span class="area">Деньги</span>
+        <h3>Рассрочка закрыта, с января откладываю 30–50 тыс. в месяц</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M3 11 12 4l9 7M5 10v10h14V10M10 20v-5h4v5"/></svg></div>
+        <span class="area">Переезд</span>
+        <h3>Живу в своей квартире, обустройство закрыто</h3>
+      </article>
+      <article class="goal">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M2 19h20M5 19V9l7-4 7 4v10M9 19v-6h6v6"/></svg></div>
+        <span class="area">Поступление</span>
+        <h3>Взяла консультации по поступлению за рубеж</h3>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="signals">
+  <div class="wrap">
+    <h2>Как пойму,<br>что движусь</h2>
+    <div class="signals">
+      <div class="tabs" role="tablist" aria-label="Признаки движения">
+        <button role="tab" aria-selected="true" aria-controls="s1" id="t1">День</button>
+        <button role="tab" aria-selected="false" aria-controls="s2" id="t2" tabindex="-1">Неделя</button>
+        <button role="tab" aria-selected="false" aria-controls="s3" id="t3" tabindex="-1">Результаты</button>
+        <button role="tab" aria-selected="false" aria-controls="s4" id="t4" tabindex="-1">Обещания</button>
+        <button role="tab" aria-selected="false" aria-controls="s5" id="t5" tabindex="-1">Благодарность</button>
+      </div>
+      <div class="sig-photo">
+        <img src="https://images.pexels.com/photos/38289/pexels-photo-38289.jpeg?auto=compress&cs=tinysrgb&w=1100" alt="Чёрно-белый профиль женщины" onerror="this.remove()">
+      </div>
+      <div class="sig-text">
+        <div class="sig-panel" role="tabpanel" id="s1" aria-labelledby="t1">
+          <h3>Движение от дня к дню</h3>
+          <p>Главная задача дня закрыта, выполнено 60% плана. План пишу вечером и обновляю утром.</p>
+        </div>
+        <div class="sig-panel" role="tabpanel" id="s2" aria-labelledby="t2" hidden>
+          <h3>Движение от недели к неделе</h3>
+          <p>В пятницу в Планере по SEO и ТехМедПорталу отмечен хотя бы один ключевой результат за неделю.</p>
+        </div>
+        <div class="sig-panel" role="tabpanel" id="s3" aria-labelledby="t3" hidden>
+          <h3>Результаты на материи</h3>
+          <p>По еженедельным ретроспективам и Планеру видно движение и промежуточные результаты.</p>
+        </div>
+        <div class="sig-panel" role="tabpanel" id="s4" aria-labelledby="t4" hidden>
+          <h3>Держу обещания себе</h3>
+          <p>Отбой в 22:00 и подъём в 6:00, ретроспектива минимум раз в два дня, наблюдения минимум 2 в неделю, английский минимум 2 раза в неделю. В пятницу подвожу итоги.</p>
+        </div>
+        <div class="sig-panel" role="tabpanel" id="s5" aria-labelledby="t5" hidden>
+          <h3>Мне везёт, и я благодарна</h3>
+          <p>В ежемесячной ретроспективе смотрю, что получилось, за что я благодарна в этом месяце и какие уроки мне удалось пройти.</p>
+        </div>
+        <div class="sig-meta"><span>Проверка</span><b id="sigWhen">Каждый вечер</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="principles" class="principles">
+  <svg class="wave" viewBox="0 0 1440 220" preserveAspectRatio="none" aria-hidden="true"><path d="M0 170 C 280 210, 520 200, 760 120 S 1180 10, 1440 70" fill="none" stroke="#3a3a3e" stroke-width="2"/></svg>
+  <div class="wrap">
+    <div>
+      <h2>Мои принципы</h2>
+      <div class="rule"></div>
+      <p class="motto">Быть там, где результат вероятнее</p>
+      <p class="intro">Как я начинаю мыслить. Девиз и принципы, по которым я принимаю решения каждый день.</p>
+    </div>
+    <div class="p-list">
+      <article class="p-card key">
+        <div>
+          <span class="badge badge-main">Главный принцип</span>
+          <h3>Промежуточные результаты</h3>
+          <p>Раньше я мыслила широкими мазками: в голове делала всё одновременно и в итоге нигде не двигалась. На самом деле путь проходит через <mark>точки фиксации реальности</mark> — промежуточные результаты, после которых в жизни случаются небольшие, но настоящие изменения. Научиться мыслить и двигаться так — главное, чему я учусь за эти 6 месяцев. <em>Тогда я всегда буду там, где результат вероятнее.</em></p>
+        </div>
+        <span class="mark" aria-hidden="true"><svg width="26" height="14" viewBox="0 0 26 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11 13 3l10 8"/><circle cx="3" cy="11" r="2" fill="currentColor"/><circle cx="13" cy="3" r="2" fill="currentColor"/><circle cx="23" cy="11" r="2" fill="currentColor"/></svg></span>
+      </article>
+      <article class="p-card">
+        <div><h3>Ключевое — на первое место</h3><p>Сначала делаю ключевое на достаточном уровне, чтобы двигаться дальше. На первом месте главная задача, потом всё остальное. Не заканчиваю день, пока не сделаю главную задачу. Остальное — по остатку.</p></div>
+        <span class="mark" aria-hidden="true">1</span>
+      </article>
+      <article class="p-card">
+        <div><h3>Каждой задаче своё время</h3><p>Работа до 17:00, после неё — личные дела. Выходные: один день полностью под личные задачи, второй — на быт, встречи и отдых. Я не беру больше времени, а учусь делать то же меньше, но лучше. Наращиваю эффективность, а не часы.</p></div>
+        <span class="mark" aria-hidden="true" style="font-size:12px">8–17</span>
+      </article>
+      <article class="p-card">
+        <div><span class="badge badge-new">NEW</span><h3>Больше, чем 0</h3><p>Раньше «больше, чем 0» значило сделать хоть что-нибудь. Теперь у меня апдейт: больше, чем 0 — это сделать <mark>главную задачу</mark> дня, даже если день выбился из режима.</p></div>
+        <span class="mark" aria-hidden="true">&gt;0</span>
+      </article>
+      <article class="p-card">
+        <div><h3>План засчитан на 60%</h3><p>День удался, если сделана главная задача. Иду к тому, чтобы выполнять 60% плана.</p></div>
+        <span class="mark" aria-hidden="true">60</span>
+      </article>
+      <article class="p-card">
+        <div><h3>Сезон отшельника</h3><p>Меняю фокус: от впечатлений — к впечатлениям от результатов. Сейчас именно промежуточные результаты дают мне чувство жизни. Одна вылазка с близкими в месяц, остальное — по тому, как идут ключевые задачи.</p></div>
+        <span class="mark" aria-hidden="true">1×</span>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="habits">
+  <div class="wrap">
+    <div class="head-row">
+      <h2>Мои привычки</h2>
+      <p>Выстраиваю режим, планирование, здоровье, тексты и рабочий кейс — базу, на которой стоят все большие цели.</p>
+    </div>
+    <div class="habits">
+      <div>
+        <p class="hyp"><b>Гипотеза проекта:</b> цели начнут сдвигаться, когда я буду соблюдать режим, планировать день с главной задачей, определять промежуточные результаты недели и регулярно писать наблюдения. Это пять привычек, на которых строятся следующие 6 месяцев:</p>
+        <ol class="h-list">
+          <li class="h-main">
+            <span class="badge badge-main">Основная привычка</span>
+            <h3>Планирую день + главную задачу</h3>
+            <p>План пишу вечером, обновляю утром. В нём всегда есть главная задача дня.</p>
+          </li>
+          <li>
+            <h3>Соблюдаю режим</h3>
+            <p>Отбой в 22:00, подъём в 6:00.</p>
+          </li>
+          <li>
+            <h3>Определяю <mark>промежуточные результаты</mark> недели</h3>
+            <p>В пятницу отмечаю в Планере, что сдвинулось по проектам.</p>
+          </li>
+          <li>
+            <h3>Регулярно пишу наблюдения</h3>
+            <p>Минимум 2 в неделю, хорошо — 4, в идеале раз в два дня.</p>
+          </li>
+          <li>
+            <h3>Пишу ретроспективу</h3>
+            <p>В идеале каждый день, минимум раз в два дня.</p>
+          </li>
+        </ol>
+      </div>
+      <figure class="dots-card">
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <figcaption>
+          <b id="dotsCount">0 из 179</b>
+          <span>Моя цель — чтобы в каждый день проекта была сделана главная задача: маленькая точка фиксации реальности.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="day">
+  <div class="wrap">
+    <div class="head-row">
+      <h2>Мой день</h2>
+    </div>
+    <div class="day">
+      <div class="slot"><time>6:00–7:30</time><p><b>Подъём</b>, простой завтрак</p></div>
+      <div class="slot"><time>Дорога</time><p>30 минут пешком: тишина, музыка или лекции</p></div>
+      <div class="slot focus"><time>8:00–17:00</time><p><b>Работа в МедСтандарте</b>, не меньше 3 часов на ключевые задачи</p></div>
+      <div class="slot"><time>Дорога</time><p>30 минут пешком: тишина, разговоры или лекции</p></div>
+      <div class="slot"><time>18:00–21:00</time><p><b>Ужин и готовка</b> на следующие дни. Английский, наблюдения, Мягкая Сила, личные задачи. По желанию — 1,5 часа на стажировку</p></div>
+      <div class="slot"><time>21:00</time><p><b>Без гаджетов:</b> полежать, принять ванну или почитать книгу. Это мой ежедневный отдых</p></div>
+      <div class="slot"><time>22:00</time><p><b>Сон</b></p></div>
+      <div class="slot weekend"><time>Выходной 1</time><p><b>Личные задачи</b> — весь день</p></div>
+      <div class="slot weekend"><time>Выходной 2</time><p><b>Быт, встречи и отдых</b></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="months">
+  <div class="wrap">
+    <h2>Вехи по месяцам</h2>
+    <div class="months">
+      <div class="month"><h3>Октябрь</h3><ul><li>Живу в новой квартире, планирую день ежедневно</li><li>Каталог ушёл в разработку, тексты трёх страниц</li><li>Старт посадки по лицензированию</li><li>Первая версия ТЗ ТехМедПортала</li><li>Чек-ап у врача, с 19-го — Мягкая Сила</li></ul></div>
+      <div class="month"><h3>Ноябрь</h3><ul><li>Найдена команда на дизайн 1-го этапа ТехМедПортала</li><li>Обустройство закрыто</li><li>Стажировка завершена</li><li>Погашены 96 тыс. за обучение</li></ul></div>
+      <div class="month"><h3>Декабрь</h3><ul><li>Завершаю дела 2026 года</li><li>Рассрочка закрыта</li><li>Консультации по поступлению</li><li>Отдых</li></ul></div>
+      <div class="month"><h3>Январь</h3><ul><li>ТехМедПортал уходит в разработку</li><li>Начинаю откладывать каждый месяц</li></ul></div>
+      <div class="month"><h3>Февраль</h3><ul><li>Режим, тексты и английский по плану</li></ul></div>
+      <div class="month finish"><h3>Март</h3><ul><li>Лицензирование на первой странице, блог в индексе</li><li>Кейс в портфолио</li><li>Английский — привычка</li><li>Обновляю план на следующий этап</li></ul></div>
+    </div>
+
+    <div class="closing">
+      <img src="https://images.pexels.com/photos/12562547/pexels-photo-12562547.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="" onerror="this.remove()">
+      <div class="closing-in">
+        <h2>Каждый день и неделя ценны</h2>
+        <p>Потому что я делаю ключевое. Внутри больше уверенности и спокойствия.</p>
+        <div class="actions">
+          <a class="btn btn-solid" href="https://lexybelial.github.io/dnevnik/planer">Открыть Планер</a>
+          <a class="btn btn-ghost" href="https://lexybelial.github.io/dnevnik/celi/">Приложение по целям</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Новая реальность · октябрь 2026 — март 2027</span>
+    <span>Фото: <a href="https://www.pexels.com">Pexels</a></span>
+  </div>
+</footer>
+
+<script>
+  // Типограф: короткие слова и числа не отрываются от следующего слова, тире — от предыдущего
+  (function(){
+    var short = /(^|[\s«(\u00A0])([А-Яа-яЁёA-Za-z]{1,3}|\d+)\s+(?=[^\s—–])/g;
+    var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(n){ return /SCRIPT|STYLE/.test(n.parentNode.nodeName) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT; }
+    });
+    var n, t;
+    while ((n = walker.nextNode())) {
+      t = n.nodeValue;
+      if (!t.trim()) continue;
+      t = t.replace(/\s+([—–])/g, '\u00A0$1');
+      t = t.replace(short, '$1$2\u00A0').replace(short, '$1$2\u00A0');
+      n.nodeValue = t;
+    }
+  })();
+
+  // Прогресс проекта: с 1 октября 2026 по 28 марта 2027 включительно.
+  // Процент считается по прошедшему времени и обновляется каждую минуту.
+  (function(){
+    var start = new Date(2026, 9, 1), end = new Date(2027, 2, 29); // 29 марта 00:00 = конец дня 28 марта
+    var day = 864e5, total = Math.round((end - start) / day);    // 179 дней
+    var label = document.getElementById('dayLabel'), out = document.getElementById('pct'), bar = document.getElementById('barFill');
+    function days(n){ var a = n % 10, b = n % 100; return n + (a === 1 && b !== 11 ? ' день' : a >= 2 && a <= 4 && (b < 12 || b > 14) ? ' дня' : ' дней'); }
+    function update(){
+      var now = new Date(), pct;
+      if (now < start) { pct = 0; label.textContent = 'Старт 1 октября 2026'; }
+      else if (now >= end) { pct = 100; label.textContent = 'Финиш 28 марта 2027 — путь пройден'; }
+      else {
+        pct = (now - start) / (end - start) * 100;
+        var passed = Math.floor((now - start) / day) + 1;
+        label.textContent = 'День ' + passed + ' из ' + total + ' · до 28 марта ' + days(total - passed);
+      }
+      out.textContent = pct.toFixed(1).replace('.', ',') + '%';
+      bar.style.width = Math.max(pct, 0.8) + '%';
+    }
+    requestAnimationFrame(update);
+    setInterval(update, 60000);
+  })();
+
+  // Точки: каждая — день проекта, закрашены прожитые
+  (function(){
+    var start = new Date(2026, 9, 1), total = 179, box = document.getElementById('dots');
+    var passed = Math.floor((new Date() - start) / 864e5) + 1;
+    passed = Math.max(0, Math.min(total, passed));
+    for (var i = 1; i <= total; i++) {
+      var d = document.createElement('i');
+      if (i <= passed) d.className = 'on';
+      if (i === passed && passed < total) d.className = 'on today';
+      box.appendChild(d);
+    }
+    document.getElementById('dotsCount').textContent = passed + ' из ' + total;
+  })();
+
+  // Вкладки «Как пойму, что движусь»
+  (function(){
+    var tabs = [].slice.call(document.querySelectorAll('[role="tab"]'));
+    var when = ['Каждый вечер', 'Пятница вечером', 'Пятница вечером', 'Пятница вечером', 'Конец месяца'];
+    function select(i){
+      tabs.forEach(function(t, j){
+        var on = i === j;
+        t.setAttribute('aria-selected', on);
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+      });
+      document.getElementById('sigWhen').textContent = when[i];
+    }
+    tabs.forEach(function(t, i){
+      t.addEventListener('click', function(){ select(i); });
+      t.addEventListener('keydown', function(e){
+        var k = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (k) { e.preventDefault(); var n = (i + k + tabs.length) % tabs.length; select(n); tabs[n].focus(); }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
