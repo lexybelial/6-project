@@ -229,11 +229,30 @@ mark{background:linear-gradient(transparent 58%,var(--accent-soft) 58%);color:in
 .field pre{white-space:pre-wrap;font:400 15px/1.65 var(--f-body);background:var(--soft);border-radius:14px;padding:18px;overflow-wrap:anywhere}
 .copyrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
 .copied{font-size:13px;color:var(--muted)}
+
+/* мобильная версия: центр заголовков и меню разделов */
+.qa ol.insights{padding-left:0}
+.menu-btn{display:none}
+@media (max-width:700px){
+  .section-head,.qa > h3,.sumbox > h3,.hero h1,.hero .lead{text-align:center}
+  .hero .badge{justify-self:center!important;text-align:center}
+  .hero .lead{margin-inline:auto}
+  .period .yr{flex-direction:column;align-items:center;text-align:center;gap:6px}
+  .yearcard{text-align:center}
+  .menu-btn{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;font:600 15px var(--f-body);color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:11px 16px;cursor:pointer}
+  .menu-btn small{display:block;font:500 11px var(--f-body);color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:left}
+  .menu-btn .ico{font-size:18px;line-height:1;transition:transform .2s}
+  .tabbar.open .menu-btn .ico{transform:rotate(180deg)}
+  .tabs{display:none;flex-direction:column;gap:4px;margin-top:8px;overflow:visible}
+  .tabbar.open .tabs{display:flex}
+  .tab{text-align:left;padding:12px 16px;border-radius:12px;font-size:15px;background:var(--surface);border-color:var(--line);color:var(--text)}
+  .tab[aria-selected="true"]{background:var(--text);color:#fff;border-color:var(--text)}
+}
 </style>
 </head>
 <body>
 
-<div class="tabbar"><div class="tabs" role="tablist" aria-label="Разделы">
+<div class="tabbar"><button class="menu-btn" type="button" aria-expanded="false" aria-controls="tablist"><span><small>Раздел</small><span class="cur"></span></span><span class="ico" aria-hidden="true">▾</span></button><div class="tabs" id="tablist" role="tablist" aria-label="Разделы">
   <button class="tab" role="tab" id="t-bio" aria-controls="bio">Биография</button>
   <button class="tab" role="tab" id="t-itog" aria-controls="itog">9 сфер</button>
   <button class="tab" role="tab" id="t-karta" aria-controls="karta">Карта изменений</button>
@@ -754,12 +773,16 @@ mark{background:linear-gradient(transparent 58%,var(--accent-soft) 58%);color:in
   function show(id,scroll){
     tabs.forEach(function(t){var on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on?"true":"false");t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on;});
     try{localStorage.setItem("tochka-tab",id);}catch(e){}
+    var cur=document.querySelector("#t-"+id); var mb=document.querySelector(".menu-btn");
+    if(mb&&cur){mb.querySelector(".cur").textContent=cur.textContent; document.querySelector(".tabbar").classList.remove("open"); mb.setAttribute("aria-expanded","false");}
     if(scroll){window.scrollTo({top:0});}
   }
   tabs.forEach(function(t,i){
     t.addEventListener("click",function(){show(t.getAttribute("aria-controls"),true);});
     t.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="ArrowLeft"){var j=(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;tabs[j].focus();tabs[j].click();}});
   });
+  (function(){var mb=document.querySelector(".menu-btn"), tb=document.querySelector(".tabbar"); if(!mb)return;
+    mb.addEventListener("click",function(){var on=tb.classList.toggle("open"); mb.setAttribute("aria-expanded",on?"true":"false");});})();
   var start="bio", h=(location.hash||"").slice(1);
   if(h&&document.getElementById(h)&&document.getElementById(h).getAttribute("role")==="tabpanel"){start=h;}
   else{try{var s=localStorage.getItem("tochka-tab");if(s&&document.getElementById(s))start=s;}catch(e){}}
