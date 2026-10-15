@@ -1,0 +1,797 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Точка отсчёта</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&family=Manrope:wght@400;500;600;700&display=swap">
+<style>
+/* Светлая страница-учебник с вкладками. Основа — нежный минимализм с оранжевым акцентом;
+   «Карта изменений» — шалфейно-зелёная; «Сила» — чёрно-белая с красным акцентом. */
+:root{
+  color-scheme:light;
+  --bg:#faf8f5; --surface:#ffffff; --soft:#f4f0ea; --line:#ebe5dc;
+  --text:#1d1b19; --muted:#79726a; --accent:#e5763a; --accent-soft:#fde7d6; --peach:#f5c7a1;
+  --g-bg:#e4eade; --g-deep:#3f5a43; --g-mid:#7f9a7c; --g-soft:#cddac6; --g-glass:rgba(255,255,255,.72);
+  --r:#c62f2c; --r-ink:#111111; --r-gray:#f3f3f3; --r-line:#e6e6e6;
+  --f-head:"Onest","Manrope",system-ui,sans-serif;
+  --f-body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font:400 16px/1.65 var(--f-body);-webkit-font-smoothing:antialiased;padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1040px;margin:0 auto}
+.col{max-width:720px}
+h1,h2,h3{font-family:var(--f-head);text-wrap:balance}
+h1{font-weight:400;font-size:clamp(40px,7vw,76px);line-height:1;letter-spacing:-.03em}
+h2{font-weight:400;font-size:clamp(28px,4vw,42px);line-height:1.1;letter-spacing:-.02em}
+h3{font-weight:500;font-size:20px;line-height:1.3;letter-spacing:-.01em}
+p{max-width:68ch}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+mark{background:linear-gradient(transparent 58%,var(--accent-soft) 58%);color:inherit;font-weight:600;padding:0 2px}
+.badge{display:inline-block;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:3px 12px}
+.muted{color:var(--muted)}
+
+/* вкладки */
+.tabbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(250,248,245,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);margin-inline:-16px;padding:12px 16px;border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:1040px;margin:0 auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;font:600 14px var(--f-body);color:var(--muted);background:transparent;border:1px solid transparent;border-radius:999px;padding:8px 16px;cursor:pointer;transition:color .15s,background .15s}
+.tab:hover{color:var(--text);background:var(--soft)}
+.tab[aria-selected="true"]{background:var(--text);color:#fff}
+.panel{padding-top:40px}
+
+/* учебные блоки «вопрос — ответ» */
+.qa{display:grid;gap:12px;padding-block:28px;border-top:1px solid var(--line)}
+.qa > *,.panel > *,.chart,.chart-scroll{min-width:0}
+.qa:first-of-type{border-top:0}
+.qa h3{font-size:21px}
+.qa ul,.qa ol{padding-left:1.2em;display:grid;gap:6px}
+.qa li{max-width:66ch}
+.thesis{font-family:var(--f-head);font-size:19px;font-weight:500;line-height:1.4;border-left:3px solid var(--accent);padding:2px 0 2px 16px;max-width:60ch}
+.quote{color:var(--muted);font-style:italic;border-left:2px solid var(--line);padding-left:14px}
+.section-head{display:grid;gap:14px;margin-bottom:12px}
+.section-head p{color:var(--muted);font-size:17px}
+
+/* ИТОГ */
+.hero{position:relative;overflow:hidden;border-radius:28px;padding:56px 40px 48px;background:
+ radial-gradient(70% 90% at 85% 15%,rgba(245,199,161,.85),transparent 60%),
+ radial-gradient(60% 70% at 10% 100%,rgba(229,118,58,.28),transparent 65%),
+ radial-gradient(50% 60% at 55% 75%,rgba(214,201,236,.55),transparent 70%),
+ linear-gradient(180deg,#fff7f0,#fbf3ec);display:grid;gap:18px}
+.hero .lead{font-size:18px;max-width:52ch;color:#4a443e}
+@media (max-width:560px){.hero{padding:40px 22px 34px;border-radius:22px}}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.duo > div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px 22px;display:grid;gap:8px;align-content:start;min-width:0}
+.duo .lab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:640px){.duo{grid-template-columns:1fr}}
+.gap{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;display:grid;gap:20px}
+.gap-row{display:grid;gap:10px}
+.gap-row .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.gap-row .top span{font-weight:600}
+.gap-row .top small{display:block;font-weight:400;color:var(--muted);font-size:14px}
+.gap-row .top b{font-family:var(--f-head);font-weight:300;font-size:46px;line-height:1}
+.bar{height:8px;border-radius:99px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--accent)}
+.bar.out i{background:var(--peach)}
+
+/* столбчатая диаграмма */
+.chart{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px 20px 18px;position:relative}
+.chart-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:10px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.sw{width:12px;height:12px;border-radius:4px;display:inline-block}
+.chart-scroll{overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:620px;height:auto}
+.chart .tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);box-shadow:0 8px 24px rgba(60,40,20,.10);border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.45;min-width:150px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+.chart .tip.on{opacity:1;transform:none}
+.chart .tip b{font-family:var(--f-head);font-weight:500;font-size:15px;display:block;margin-bottom:2px}
+.chart-note{font-size:13px;color:var(--muted);margin-top:10px}
+
+/* изменения */
+.change{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:30px 30px 8px;margin-bottom:18px}
+.change.key{border-color:var(--peach);background:linear-gradient(180deg,#fff8f2,var(--surface) 140px)}
+.change .num{font-family:var(--f-head);font-weight:300;font-size:15px;color:var(--accent)}
+.change > h3{font-size:clamp(22px,3vw,28px);margin:6px 0 4px;max-width:30ch}
+.change .qa:first-of-type{border-top:1px solid var(--line)}
+@media (max-width:560px){.change{padding:22px 18px 4px;border-radius:18px}}
+.flow{list-style:none;padding:0!important;display:grid;gap:0!important;counter-reset:f}
+.flow li{counter-increment:f;display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;padding:8px 0;position:relative}
+.flow li::before{content:counter(f);width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:600 13px var(--f-body)}
+.flow li:not(:last-child)::after{content:"";position:absolute;left:13.5px;top:36px;bottom:-8px;width:1px;background:var(--peach)}
+.tbl{display:grid;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.tbl > div{display:grid;grid-template-columns:150px 1fr;gap:16px;padding:12px 16px;border-top:1px solid var(--line);font-size:15px}
+.tbl > div:first-child{border-top:0}
+.tbl b{font-weight:600}
+@media (max-width:560px){.tbl > div{grid-template-columns:1fr;gap:2px}}
+
+/* сферы */
+.ctrls{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 18px}
+.btn{font:600 14px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:9px 18px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.dark{background:var(--text);color:#fff;border-color:var(--text)}
+.btn.dark:hover{background:#3a3631}
+.sph-list{display:grid;gap:12px}
+.sumbox{background:var(--soft);border-radius:20px;padding:22px 24px;display:grid;gap:12px;margin:18px 0 0}
+.sumbox h3{font-size:21px}
+@media (max-width:620px){.sumbox{padding:18px 16px}}
+.sph{background:var(--surface);border:1px solid var(--peach);border-radius:20px}
+.sph>.shead{padding:20px 22px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center}
+.sname{font-family:var(--f-head);font-weight:500;font-size:19px}
+.sline{display:block;color:var(--muted);font-size:14px;margin-top:3px;max-width:62ch}
+.score{display:grid;place-items:center;min-width:64px;height:64px;border-radius:50%;background:var(--accent-soft);font-family:var(--f-head);font-size:22px;color:var(--accent);line-height:1}
+.score small{font:500 10px var(--f-body);color:var(--muted);margin-top:-14px}
+.sbody{padding:0 22px 8px}
+.sbody .qa{padding-block:18px}
+.sbody .qa h3{font-size:17px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.two > div{background:var(--soft);border-radius:14px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.two .lab{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+@media (max-width:620px){.two{grid-template-columns:1fr} .sph>.shead{padding:16px} .sbody{padding:0 16px 4px}}
+
+/* биография */
+.tl{display:grid;border-top:1px solid var(--line);margin-top:8px}
+.period{display:grid;grid-template-columns:1fr;gap:16px;padding:34px 0;border-bottom:1px solid var(--line)}
+.period .yr{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+.period .yr span{margin-top:0!important}
+.period .yr{font-family:var(--f-head);font-weight:300;font-size:30px;line-height:1.1}
+.period .yr span{display:block;font:500 14px var(--f-body);color:var(--accent);margin-top:8px}
+.period .body{display:grid;gap:14px;min-width:0}
+@media (max-width:720px){.period{grid-template-columns:1fr;gap:10px}}
+.bl{padding-left:1.15em;display:grid;gap:8px;margin:0}
+.bl li{max-width:62ch}
+.dvz{background:var(--surface);border:1px solid var(--peach);border-radius:16px;padding:16px 20px;display:grid;gap:6px;max-width:780px}
+.dvz b{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.dvz-n{font-family:var(--f-head);font-size:20px;font-weight:500;line-height:1.3}
+.dvz p{color:var(--muted);font-size:15px}
+.obsnote{background:var(--surface);border:1px dashed var(--peach);border-radius:12px;padding:10px 14px;font-size:15px;margin-top:6px}
+.obsnote b{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:2px}
+.bgnote{margin-top:24px;background:var(--accent-soft);border-radius:18px;padding:18px 22px;max-width:720px}
+.bgnote b{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:4px}
+.under{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:4px;color:var(--text)}
+.insights{list-style:none;display:grid;gap:12px;counter-reset:i;margin-top:20px}
+.insights li{counter-increment:i;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px 20px;display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:start}
+.insights li::before{content:counter(i);width:44px;height:44px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:500 16px var(--f-head)}
+.insights p{color:var(--muted);font-size:15px;margin-top:4px}
+
+/* КАРТА ИЗМЕНЕНИЙ — зелёная */
+.green{background:linear-gradient(160deg,#eef2ea 0%,var(--g-bg) 55%,#d6e0cf 100%);border-radius:28px;padding:44px 32px;position:relative;overflow:hidden}
+.green::before{content:"";position:absolute;width:520px;height:520px;right:-160px;top:-180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.9),rgba(255,255,255,0) 65%)}
+.green > *{position:relative}
+.green h2{color:#1f2b21}
+.green .section-head p{color:#56685a}
+.gstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:26px 0 30px}
+.gstat{background:var(--g-glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:18px;display:grid;gap:6px;align-content:start}
+.gstat b{font-family:var(--f-head);font-weight:400;font-size:32px;line-height:1;color:var(--g-deep)}
+.gstat b small{font-size:17px;line-height:1.2}
+.gstat span{font-size:13px;color:#4c5e50;line-height:1.4}
+.gstat.dark{background:var(--g-deep);border-color:var(--g-deep)}
+.gstat.dark b,.gstat.dark span{color:#eef3ea}
+@media (max-width:900px){.gstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.ggrid{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+@media (max-width:860px){.ggrid{grid-template-columns:1fr}}
+.gcard{background:var(--g-glass);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.9);border-radius:20px;padding:22px}
+.gcard > h3{color:#1f2b21;margin-bottom:12px}
+.wb{list-style:none;display:grid}
+.wb li{display:grid;gap:4px;padding:14px 0;border-top:1px solid rgba(63,90,67,.15)}
+.wb li:first-child{border-top:0;padding-top:4px}
+.wb .w{font-size:14px;color:#6b7c6e}
+.wb .b{font-weight:600;color:#1f2b21}
+.wb .b::before{content:"→ ";color:var(--g-mid)}
+.wb .y{font-size:13px;color:var(--g-deep);background:rgba(127,154,124,.18);border-radius:999px;padding:2px 10px;justify-self:start}
+.years{display:grid;gap:12px}
+.yearcard{background:var(--g-glass);border:1px solid rgba(255,255,255,.9);border-radius:18px;padding:18px 20px}
+.yearcard b{font-family:var(--f-head);font-weight:400;font-size:28px;color:var(--g-deep);display:block;line-height:1.1}
+.yearcard strong{display:block;font-weight:600;margin:6px 0 4px;color:#1f2b21}
+.yearcard p{font-size:14px;color:#56685a}
+.stuck{margin-top:16px}
+.stuck li .b{color:#7a5a45}
+.stuck li .b::before{content:"— ";color:#b08a70}
+@media (max-width:560px){.green{padding:30px 16px;border-radius:20px}}
+
+/* СИЛА — красный акцент */
+.red{background:#fff;border-radius:28px;padding:48px 36px;border:1px solid var(--r-line)}
+.red h2.big{font-family:var(--f-head);font-weight:500;text-transform:uppercase;font-size:clamp(32px,6vw,64px);line-height:.98;letter-spacing:-.02em;color:var(--r-ink)}
+.red h2.big em{font-style:normal;color:var(--r)}
+.red h2.big span{color:#b9b9b9}
+.red .intro{display:grid;grid-template-columns:200px 1fr;gap:28px;align-items:end;margin-bottom:34px}
+.red .intro p{font-size:14px;color:#777}
+.red .sq{display:inline-block;width:9px;height:9px;background:var(--r);margin-bottom:10px}
+.nlist{list-style:none;display:grid;border-top:1px solid var(--r-line)}
+.nlist li{display:grid;grid-template-columns:90px 1fr 1.2fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--r-line);align-items:baseline}
+.nlist .n{font-family:var(--f-head);font-weight:300;font-size:40px;line-height:1;color:var(--r)}
+.nlist .t{font-family:var(--f-head);font-weight:500;font-size:19px;text-transform:uppercase;letter-spacing:-.01em;color:var(--r-ink)}
+.nlist .d{font-size:14px;color:#666}
+.rcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px}
+.rcard{background:var(--r-gray);border-radius:6px;padding:20px;display:grid;gap:10px;align-content:start}
+.rcard .g{font-size:12px;color:#888}
+.rcard h3{font-size:17px;color:var(--r-ink)}
+.rcard .m{font-size:14px;color:#555;border-top:1px solid #e2e2e2;padding-top:10px}
+.rcard .m b,.rcard .u b{display:block;font-size:12px;font-weight:600;color:var(--r);text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+.rcard .u{font-size:14px;color:#222}
+@media (max-width:860px){.rcards{grid-template-columns:1fr 1fr}.red .intro{grid-template-columns:1fr}}
+@media (max-width:620px){.nlist li{grid-template-columns:56px 1fr;gap:6px 16px}.nlist .d{grid-column:2}.nlist .n{font-size:30px}.rcards{grid-template-columns:1fr}.red{padding:30px 18px;border-radius:20px}}
+
+/* намерение */
+.big-quote{font-family:var(--f-head);font-weight:300;font-size:clamp(26px,4vw,40px);line-height:1.2;letter-spacing:-.02em;max-width:22ch}
+.big-quote em{font-style:normal;color:var(--accent)}
+.steps{list-style:none;display:grid;gap:10px;counter-reset:s}
+.steps li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:start}
+.steps li::before{content:counter(s);width:32px;height:32px;border-radius:50%;background:var(--text);color:#fff;display:grid;place-items:center;font:600 13px var(--f-body)}
+.steps p{color:var(--muted);font-size:14px;margin-top:2px}
+
+/* ментор */
+.field{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px;display:grid;gap:14px;margin-bottom:16px}
+.field .q{font-family:var(--f-head);font-weight:500;font-size:18px}
+.field pre{white-space:pre-wrap;font:400 15px/1.65 var(--f-body);background:var(--soft);border-radius:14px;padding:18px;overflow-wrap:anywhere}
+.copyrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.copied{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="tabbar"><div class="tabs" role="tablist" aria-label="Разделы">
+  <button class="tab" role="tab" id="t-bio" aria-controls="bio">Биография</button>
+  <button class="tab" role="tab" id="t-itog" aria-controls="itog">9 сфер</button>
+  <button class="tab" role="tab" id="t-karta" aria-controls="karta">Карта изменений</button>
+  <button class="tab" role="tab" id="t-izm" aria-controls="izm">Главная трудность</button>
+  <button class="tab" role="tab" id="t-nam" aria-controls="nam">Намерение на обучение</button>
+  <button class="tab" role="tab" id="t-sila" aria-controls="sila">Сила</button>
+</div></div>
+
+<div class="wrap">
+
+<!-- ================= БИОГРАФИЯ ================= -->
+<section class="panel" id="bio" role="tabpanel" aria-labelledby="t-bio">
+  <div class="hero">
+    <span class="badge" style="justify-self:start">Домашнее задание урока 1 · Эмоциональная зрелость · октябрь 2026</span>
+    <h1>Точка отсчёта</h1>
+    <p class="lead">Я внимательно и глубоко смотрю на себя, чтобы честно понять, что со мной происходит и куда я решаю идти в ближайшие шесть месяцев. Через четыре месяца я вернусь к этой странице и сравню себя с собой сегодняшней.</p>
+  </div>
+  <div style="height:28px"></div>
+  <div class="section-head col">
+    <h2>Двойная биография 2022–2026</h2>
+    <p>Я хочу честно увидеть, что происходило со мной внешне и внутренне в последние годы. Как выстраивался мой путь? Что менялось снаружи и внутри? Как это было?</p>
+  </div>
+  <div class="tl" id="timeline"></div>
+  <div class="bgnote"><b>На фоне все эти годы</b>Сильные переживания из-за событий в мире и много тревоги, связанной с братом.</div>
+  <div class="qa col" style="border-top:0;margin-top:28px">
+    <h3>Какие осознания появились во время задания?</h3>
+    <ol class="insights">
+      <li><div><b>Внутри я выросла сильнее, чем снаружи.</b><p>Отношения с собой я оцениваю на 5 из 10, а работу, деньги и тело — на 2–3. В работе, профессии и отношениях с партнёром я так и не сдвинулась.</p></div></li>
+      <li><div><b>Во всех сферах у меня один затык.</b><p>Когда дело важное, я избегаю его и ухожу в суету. Главное стоит, силы уходят, и я сокрушаюсь, что никуда не двигаюсь.</p></div></li>
+      <li><div><b>Я могу. Цели всё-таки могут быть закрыты.</b><p>Так я закрыла кредиты, законспектировала до конца курс ЭЗ, завершила проект по журналам и школу приёмных родителей, закрыла 90% вопросов по ремонту.</p></div></li>
+      <li><div><b>Я скорее не устала, а потеряна.</b><p>Я не понимаю, как сочетать друг с другом людей, работу, обещания, дела и свои желания. Я часто в суете, но не чувствую, что сдвигаюсь в важных вопросах. <span class="under">Я не ощущаю, что управляю своей жизнью.</span> При этом физических сил у меня по-прежнему мало, как в 2022 году, и это становится проблемой: мне нужно восстанавливать тело. Уже четыре года я почти никогда не высыпаюсь.</p></div></li>
+      <li><div><b>Неловкость держит на расстоянии близких.</b><p>«Не знаю, что сказать» мешает мне общаться с папой, бабушкой, дедушкой и братом.</p></div></li>
+    </ol>
+    <div class="bgnote" style="margin-top:8px"><b>Совпадение? Не думаю…</b>Пока по статистике получается, что чем больше было наблюдений за год, тем сильнее были трансформации :)<br><span class="muted" style="font-size:14px">2023 — 102 наблюдения · 2024 — 41 · 2025 — 60</span></div>
+  </div>
+</section>
+
+<!-- ================= 9 СФЕР ================= -->
+<section class="panel" id="itog" role="tabpanel" aria-labelledby="t-itog" hidden>
+  <div class="section-head col">
+    <h2>9 сфер жизни</h2>
+  </div>
+
+  <div class="qa" style="border-top:0;margin-bottom:28px">
+    <div class="chart" id="chart">
+      <div class="chart-head"><b style="font-family:var(--f-head);font-weight:500">Оценка сфер, 1–10</b><div class="legend"><span><i class="sw" style="background:var(--peach)"></i>Весна 2026</span><span><i class="sw" style="background:var(--accent)"></i>Октябрь 2026</span></div></div>
+      <div class="chart-scroll"><svg id="bars" viewBox="0 0 900 330" role="img" aria-label="Оценки девяти сфер весной и в октябре 2026"></svg></div>
+      <div class="tip" id="tip" role="status"></div>
+      <p class="chart-note">Наведите на столбец или нажмите на него, чтобы увидеть оценку.</p>
+    </div>
+    <p class="muted" style="margin-top:14px">Шкала курса: 1 — мне очень сложно в этой сфере, 10 — я чувствую гармонию и удовлетворённость. Весной 2026 года я оценивала сферы в прошлом потоке, поэтому можно сравнить.</p>
+  </div>
+
+  <div class="sph-list" id="spheres"></div>
+  <div class="sumbox">
+    <h3>Что получается в итоге?</h3>
+    <p><b>Опоры — семья и люди (7 и 6).</b> Здесь я выросла больше всего: к родителям и брату внутри стабильно любовь и благодарность, панического ужаса и избегания людей больше нет. Мне ещё нужно учиться не только отдавать, но и брать, и находить баланс между общением и своими задачами.</p>
+    <p><b>Середина — я сама и духовное развитие (5 и 4).</b> Я стала теплее к себе и эмоционально устойчивее. Но я всё ещё очень требовательна к себе, а регулярных практик пока нет.</p>
+    <p><b>Проседает материя — работа, деньги и здоровье (2, 2, 3).</b> Я ещё не взяла на себя полную взрослую ответственность за свою материальную жизнь: внутри я будто <span class="under">продолжаю относиться к «взрослым делам» несерьёзно</span>. Отсюда поверхностность, неэффективность, жадность, комплекс неполноценности и невыполненные обещания. Когда нужно действовать, мне напряжённо, и я сбегаю в еду, телефон, траты и чужие дела. Поэтому результатов в этих сферах нет уже который год: ответственность, которую я беру, — мнимая. Где-то в подсознании я всё ещё жду, что всё как-то решится само.</p>
+    <p><b>Партнёр и дети (1 и 1) — самые болезненные и уязвимые сферы для меня.</b> До них я пока не дошла ни эмоционально, ни материально.</p>
+  </div>
+</section>
+
+<!-- ================= КАРТА ИЗМЕНЕНИЙ (зелёная) ================= -->
+<section class="panel" id="karta" role="tabpanel" aria-labelledby="t-karta" hidden>
+  <div class="green">
+    <div class="section-head col">
+      <h2>Карта изменений</h2>
+      <p>Три главных изменения за два года я называю так: «начала что-то делать», «стало проще быть с людьми», «внутри меньше негатива».</p>
+    </div>
+    <div class="gstats">
+      <div class="gstat dark"><b>1 год <small>на закрытие всех кредитов</small></b><span>закрывала кредиты и закрыла все к августу 2025</span></div>
+      <div class="gstat"><b>4+ <small>впечатлений в месяц</small></b><span>раз в месяц выхожу к людям и собираю всех</span></div>
+      <div class="gstat"><b>3 → 20+ <small>людей в близком окружении</small></b><span>Раньше я общалась максимум с тремя людьми одновременно, а сейчас стараюсь регулярно, каждую неделю поддерживать контакт как минимум с 12 людьми</span></div>
+      <div class="gstat"><b>56 <small>тренировок без пропусков</small></b><span>тренировок за 2025 год, хотя раньше в зал не ходила</span></div>
+    </div>
+    <div class="ggrid">
+      <div class="gcard">
+        <h3>Было → стало</h3>
+        <ul class="wb">
+          <li><span class="w">Я не видела будущего: «этот год последний» (январь 2025)</span><span class="b">Тяжёлых мыслей почти нет. Если накрывает, я пишу, поддерживаю себя и могу пойти к психологу</span><span class="y">благодаря практикам ЭЗ: письмам, ретроспективам, наблюдениям</span></li>
+          <li><span class="w">Фоном звучало «я не могу» и «я неудачница» (2024)</span><span class="b">«Дура» вырывается только вслух, и я сразу её опровергаю. Вслух признаю свои достоинства</span><span class="y">благодаря фокусу на работе с потребностью в Признании, которую я начала в 2023 году</span></li>
+          <li><span class="w">Ехать к людям было стрессом: «со мной никто не захочет общаться» (2023)</span><span class="b">Стала проще, легче и открытее в общении. Сама организовала свой день рождения, и люди рады проводить со мной время</span><span class="y">благодаря правилу «одно впечатление в месяц»</span></li>
+          <li><span class="w">С родителями — борьба и желание закрыться (2023, октябрь 2025)</span><span class="b">Любовь и «я их дочь». Упрёки меня больше не выбивают, и внутри я постоянно испытываю к ним благодарность</span><span class="y">благодаря ЭЗ и разговорам без защиты</span></li>
+          <li><span class="w">Три месяца лежала дома и почти перестала работать (2024)</span><span class="b">Каждый день делаю «больше, чем 0» и берусь за задачи выше своего уровня</span><span class="y">благодаря девизу «Больше, чем 0»</span></li>
+          <li><span class="w">Тяжёлое событие погружало в депрессию</span><span class="b">«Раньше впала бы в депрессию, а сейчас чувствую желание просто делать» (июнь 2026)</span><span class="y">благодаря наблюдениям</span></li>
+        </ul>
+        <h3 class="stuck" style="margin-top:22px">Что пока не сдвинулось</h3>
+        <ul class="wb stuck">
+          <li><span class="b">Работа и профессия: нет экспертизы и стабильности, нет нужных кейсов, резюме и портфолио. Не знаю, к какой профессии и роли я принадлежу</span></li>
+          <li><span class="b">Здоровье: каждый день физически устаю, в анализах дефициты, ложусь в 2–3 ночи</span></li>
+          <li><span class="b">Отношения с партнёром: сфера на паузе</span></li>
+          <li><span class="b">Деньги: всё, что откладываю, трачу в ноль и периодически оказываюсь в состоянии «денег нет». Я не беру за деньги ответственность и не уверена в себе как во взрослом, который всегда сможет заработать. Взрослости и навыков в управлении, заработке, распределении и приумножении денег пока нет</span></li>
+        </ul>
+      </div>
+      <div class="years">
+        <div class="yearcard"><b>2023</b><strong>Начинание</strong><p>Первый поток ЭЗ, школа приёмных родителей, участие в двух рабочих проектах: семинаре по медотходам и семинаре «План 2024».</p></div>
+        <div class="yearcard"><b>2024</b><strong>Преодоление</strong><p>Пошла работать в продажи, хотя всегда боялась звонить. Начала закрывать кредиты. Родился девиз «Больше, чем 0».</p></div>
+        <div class="yearcard"><b>2025</b><strong>Опора</strong><p>Закрыла все кредиты, начала выходить к людям, 56 тренировок, выпустила журналы.</p></div>
+        <div class="yearcard"><b>2026</b><strong>Новая реальность</strong><p>Съехала от родителей, первый за годы отпуск, сама собираю людей, начала шестимесячный проект.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ГЛАВНАЯ ТРУДНОСТЬ ================= -->
+<section class="panel" id="izm" role="tabpanel" aria-labelledby="t-izm" hidden>
+  <div class="section-head col">
+    <h2>Главное изменение: учусь быть взрослой во «взрослых» делах</h2>
+    <p>Мне нужно сменить детское отношение к своей жизни на взрослое и занять место хорошего управляющего: видеть, на что уходят моё время, силы и деньги, брать за них ответственность и доводить дела до результата.</p>
+  </div>
+
+  <div class="sumbox">
+    <h3>Что мешает мне быть хорошим управляющим?</h3>
+    <p><b>1. Детский хоровод.</b> Когда передо мной взрослая задача, включается гордыня: «это задача не по мне», «я сделаю её плохо», «это слишком сложно и слишком ответственно», «в процессе я пойму, что не такая уж я умная». Поэтому внутри я просто не хочу включаться в задачу и брать за неё ответственность. Я как ребёнок, который откладывает домашку и ждёт, что придут взрослые и всё решат.</p>
+    <p><b>2. Неосознанность.</b> Большую часть времени я не в моменте и живу на автоматизме. Я не ощущаю время и до сих пор не понимаю, на что оно уходит.</p>
+    <p><b>Что я заметила в последние дни.</b> Когда я в полном осознании себя и текущего момента, моя взрослая часть неплохо справляется. Прежнего внутреннего сопротивления уже нет: физический центр за эти годы прокачался, и включаться в дела я могу быстро.</p>
+    <p class="thesis" style="font-weight:400">Значит, мой ключ — <span class="under">осознанность</span>. Из осознанности взрослая часть во мне уже может действовать.</p>
+  </div>
+
+  <div class="qa">
+    <h3>Как выглядит мой детский хоровод?</h3>
+    <ol class="flow">
+      <li><span><b>Ситуация.</b> Передо мной взрослое дело: главная задача по SEO, сообщение по работе, пора ложиться спать, нужно записаться на анализы.</span></li>
+      <li><span><b>Мысль.</b> Включается гордыня: «здесь слишком много нужно сделать», «это слишком сложно и ответственно», «я сделаю не так», «пойму, что не такая уж я умная».</span></li>
+      <li><span><b>Чувство и тело.</b> Яркого страха уже нет. Есть детское чувство: я не хочу, чтобы мне было <span class="under">некомфортно</span>, и не хочу это выдерживать.</span></li>
+      <li><span><b>Отговорка.</b> В голове звучит: «Ну ничего страшного». Ответственность тихо снимается, и я внутри не включаюсь.</span></li>
+      <li><span><b>Автоматизм.</b> Я выпадаю из момента одним из трёх способов. Либо отключаюсь: телефон, рилсы, чужие дела. Либо имитирую дело: делаю что-то второстепенное слишком долго и слишком идеально. Либо <span class="under">делаю всё, кроме ключевого</span>: готовлюсь, изучаю, планирую — вместо одного действия, которое прямо даёт результат.</span></li>
+      <li><span><b>Потерянное время.</b> День проходит незаметно, я не могу сказать, на что он ушёл. Своё время я урываю ночью и ложусь в 2–3.</span></li>
+      <li><span><b>Итог.</b> Результата нет. Внутри «снова никуда не двигаюсь» и тихая надежда, что всё как-то решится само. Завтра хоровод повторяется.</span></li>
+    </ol>
+    <p><mark>Для начала мне нужно замечать эти реакции</mark> и через честность смотреть на своё реальное отношение к задаче.</p>
+  </div>
+
+
+  <div class="qa">
+    <h3>Как я должна измениться?</h3>
+    <div class="two">
+      <div><span class="lab">Внутри</span>
+        <p>Из ребёнка, который ждёт взрослых, — во взрослую, которая сама отвечает за свою жизнь. Замечать гордыню («это слишком сложно», «сделаю не так») и всё равно включаться. Быть в моменте и чувствовать своё время. Относиться к своему состоянию, работе и деньгам <span class="under">всерьёз</span>.</p>
+      </div>
+      <div><span class="lab">Снаружи</span>
+        <p>До больших шагов мне нужно изменить две вещи:</p>
+        <ol>
+          <li><b>Чаще быть в моменте.</b> Несколько раз в день замечать, что я выпала в автоматизм — рилсы, перфекционизм, «делаю слишком долго», — и возвращаться: «Где я? Что я сейчас делаю?»</li>
+          <li><b>Замечать момент отказа.</b> Когда внутри звучит «ну ничего страшного» или «это слишком сложно», просто ловить это и записывать.</li>
+        </ol>
+        <p>Это пока не новые дела, а внимание. Когда я в осознанности, моя взрослая часть уже умеет включаться, и следующий шаг станет мне по силам.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="qa">
+    <h3>Что я делаю каждый день, чтобы научиться включаться?</h3>
+    <p>Мой фундамент — осознанность, а её прокачивают практики школы «Симург». Без них я не смогу включиться ни в здоровье, ни в деньги, ни в работу, ни в обучение.</p>
+    <ul>
+      <li><b>Намерение.</b> Утром ставлю намерение на день, хотя бы в одно предложение.</li>
+      <li><b>Медитация.</b> Даже несколько минут возвращают меня в момент.</li>
+      <li><b>Простукивания и психотелесные сеты.</b> Помогают вернуться в тело, когда я выпала в автоматизм.</li>
+      <li><b>Самонаблюдения.</b> Замечаю свои реакции на взрослые дела и через честность смотрю на своё реальное отношение к задаче.</li>
+      <li><b>Вечер.</b> Спрашиваю себя: «Как я сейчас?» — и коротко отмечаю, на что ушёл день.</li>
+    </ul>
+    <p>Всё сразу не обязательно. Для начала — хотя бы одна практика в день: «больше, чем 0».</p>
+  </div>
+
+  <article class="change">
+    <span class="num">Проявление 1</span>
+    <h3>Взрослая забота о себе: время, тело и деньги</h3>
+    <div class="qa">
+      <h3>Как здесь работает мой детский хоровод?</h3>
+      <ol class="flow"><li><span><b>Ситуация.</b> Уже поздно и я устала, пора ложиться. Или пора пить витамины, записаться на анализы, посмотреть на деньги.</span></li><li><span><b>Отговорка.</b> «Ну ещё чуть-чуть», «ну ничего страшного», «потом».</span></li><li><span><b>Автоматизм.</b> Рилсы, что-то делаю слишком долго, трачу на автомате.</span></li><li><span><b>Итог.</b> Ложусь в 2–3, каждый день физически устаю, назначения брошены, отложенное потрачено в ноль, а куда ушёл день — не понимаю.</span></li></ol>
+    </div>
+    <div class="qa">
+      <h3>Что это значит?</h3>
+      <div class="two">
+        <div><span class="lab">Внутри</span><p>Перестать считать усталость нормой и тем, чем я могу «пожертвовать».</p>
+        <p>Начать воспринимать <span class="under">усталость</span> как то, о чём я должна позаботиться, и в этот момент самой дать себе то, что нужно.</p>
+        <p><mark><b>Заметила усталость = нужно что-то сделать, что поможет мне чувствовать себя лучше. Это моя ответственность.</b></mark></p></div>
+        <div><span class="lab">Снаружи</span><p>Первый промежуточный результат — в маленьких моментах я замечаю себя и выбираю по-взрослому:</p>
+        <ul>
+          <li>Замечаю, что засиделась в рилсах, и откладываю телефон.</li>
+          <li>Вечером замечаю усталость и иду спать раньше, а не «ещё чуть-чуть».</li>
+          <li>Ловлю «ну ничего страшного» про витамины или анализы — и всё-таки пью витамины или записываюсь.</li>
+          <li>Замечаю, что желание потратить деньги на автомате — это тоже про физическую усталость или избегание ключевой задачи.</li>
+        </ul></div>
+      </div>
+      
+    </div>
+    <div class="qa">
+      <h3>Что наблюдать?</h3>
+      <p>Моменты, когда я выпадаю в автоматизм: сколько времени прошло и что я делала. И моменты усталости: замечаю ли я их и как отвечаю.</p>
+    </div>
+  </article>
+
+  <article class="change key">
+    <span class="num">Проявление 2 · главное</span>
+    <h3>Взрослое отношение к работе: главная задача и промежуточные результаты</h3>
+    <div class="qa">
+      <h3>Как здесь работает мой детский хоровод?</h3>
+      <ol class="flow"><li><span><b>Ситуация.</b> Передо мной главная задача по SEO или ТехМедПорталу.</span></li><li><span><b>Мысль.</b> «Это слишком сложно», «здесь во многом нужно разобраться», «я сделаю не так».</span></li><li><span><b>Автоматизм.</b> Делаю всё, кроме ключевого: телефон, чаты, чужие задачи, изучаю и готовлюсь, шлифую второстепенное слишком долго.</span></li><li><span><b>Итог.</b> Работаю нестабильно и неэффективно, нет кейсов, на которые можно опереться, обещания не выполнены.</span></li></ol>
+    </div>
+    <div class="qa">
+      <h3>Мой самый яркий автоматизм: всё, кроме ключевого</h3>
+      <p>В сентябре у меня был разговор с Олей (моей подругой). Она хочет шить, но не шьёт. Она начала рассуждать, что ей нужно найти курсы, поработать, чтобы накопить на них, разобраться, какие бывают фигуры у людей. А по факту ей нужно было просто за 5 тысяч купить машинку и ткань и начать шить, разбираясь в процессе. Начать со своей фигуры, например сшить себе рубашку. Это действие дало бы ей в разы больше, чем курсы, и сделало бы результат вероятнее. На курсы можно пойти уже после первых проб — тогда и вопросы будут конкретнее, и результат лучше.</p>
+      <p>Так делаю и я. <mark>Я делаю всё что угодно, кроме ключевого действия, которое прямо влияет на результат.</mark> Ключевое действие обычно самое сложное: в нём сразу видно, получается у меня или нет. Поэтому я заменяю его подготовкой — изучаю, планирую, улучшаю, помогаю другим. Подготовка даёт ощущение, что я двигаюсь, и не сталкивает меня с реальностью.</p>
+      <p class="thesis" style="font-weight:400">Ключевое действие — это самый короткий шаг, после которого появляется реальный результат и обратная связь. Это и значит мой девиз: быть там, где результат вероятнее.</p>
+      
+      <p class="quote">«Проживание сопротивления отнимает столько же сил, сколько усилие сделать то, что наметили. Вы гораздо больше, чем ваше сопротивление». — из урока 1</p>
+    </div>
+    <div class="qa">
+      <h3>Что это значит?</h3>
+      <div class="two">
+        <div><span class="lab">Внутри</span><p>Когда я думаю «это слишком сложно», «слишком много всего» или «я сделаю не так», это просто мысли, а не правда.</p>
+        <p>Рядом с главной задачей почти всегда будет неприятно. Это нормально и значит, что я на верном пути.</p>
+        <p>Сейчас я даже не выбираю главную задачу на день, потому что это кажется слишком сложным.</p>
+        <p><mark><b>Мне нужно каждый день выбирать одно дело на 1,5 часа, которое меня продвинет. «Путь осилит идущий».</b></mark></p></div>
+        <div><span class="lab">Снаружи</span><p>Первый промежуточный результат — в маленьких рабочих моментах я выбираю по-взрослому:</p>
+        <ul>
+          <li>Замечаю, что вместо главной задачи открыла телефон или чат, и возвращаюсь к задаче.</li>
+          <li>Ловлю «это слишком сложно» или «сделаю не так» — и всё-таки делаю первые 15 минут.</li>
+          <li>Замечаю, что слишком долго шлифую второстепенное, и говорю себе: «Достаточно».</li>
+          <li>Когда застряла, пишу коллеге или руководителю вопрос, а не ухожу в лёгкие дела.</li>
+        </ul></div>
+      </div>
+    </div>
+    <div class="qa">
+      <h3>Что наблюдать?</h3>
+      <p>Как обстоят дела с постановкой и <span class="under">выполнением главной задачи</span> каждый рабочий день. И что звучит внутри, когда я откладываю задачу: «слишком сложно», «сделаю не так» или «само решится».</p>
+    </div>
+  </article>
+
+  <article class="change">
+    <span class="num">Проявление 3</span>
+    <h3>Взрослое общение: быть собой и вносить ясность</h3>
+    <div class="qa">
+      <h3>Как здесь работает мой детский хоровод?</h3>
+      <ol class="flow"><li><span><b>Ситуация.</b> Нужно позвонить папе или бабушке, сказать на работе, что мне нужно, или закончить затянувшийся разговор.</span></li><li><span><b>Чувство.</b> Неловкость, «не знаю, о чём говорить», страх показаться маленькой или, наоборот, ставлю себя выше.</span></li><li><span><b>Автоматизм.</b> Откладываю звонок, молчу о себе, «отсиживаюсь», слушая другого, продолжаю разговор, хотя у меня есть своё дело.</span></li><li><span><b>Итог.</b> Близкие ждут, на работе нет ясности, а мои задачи стоят.</span></li></ol>
+    </div>
+    <div class="qa">
+      <h3>Что это значит?</h3>
+      <div class="two">
+        <div><span class="lab">Внутри</span><p>Взять ответственность за своё участие в разговоре. Неловкость, дискомфорт, мои границы, намерения и ясность — это моя зона, и включаться в неё должна я, а не ждать, что разговор сложится сам, или просто «отсидеться», слушая другого.</p>
+        <p>Если с моей стороны <span class="under">теряется энергия</span>, это сигнал прежде всего обратить внимание на себя: что я сейчас чувствую и куда на самом деле хочу прийти в этом разговоре.</p></div>
+        <div><span class="lab">Снаружи</span><p>Первый промежуточный результат — в разговоре я начинаю замечать себя:</p>
+        <ul>
+          <li>Замечаю, что «отсиживаюсь», слушая другого, или что у меня теряется энергия.</li>
+          <li>В этот момент спрашиваю себя: «Чего я сейчас хочу от этого разговора?»</li>
+          <li>Делаю один маленький шаг из своей позиции: говорю что-то о себе, задаю свой вопрос или честно говорю, что мне пора.</li>
+        </ul></div>
+      </div>
+      
+    </div>
+    <div class="qa">
+      <h3>Что наблюдать?</h3>
+      <p>Моменты, когда в разговоре <span class="under">с моей стороны теряется энергия</span>. И моменты, когда внутри неуместно включается гордыня или комплекс неполноценности с зависимостью.</p>
+    </div>
+  </article>
+
+  <div class="sumbox">
+    <h3>Как я пойму, что взрослею?</h3>
+    <p>Если четыре месяца практиковать эти маленькие шаги, в реальности начнёт меняться вот что:</p>
+    <ul>
+      <li>Я узнаю свой детский хоровод в моменте, а не вечером задним числом.</li>
+      <li>Рилсов и «потерянных» часов становится меньше, и <span class="under">я понимаю, куда уходит мой день</span>.</li>
+      <li><span class="under">Реагирую на свою усталость</span>: замечаю её и делаю что-то, что помогает мне чувствовать себя лучше.</li>
+      <li>Я чаще ложусь раньше. Анализы сданы, к эндокринологу я сходила.</li>
+      <li>Главная задача на работе чаще сделана хотя бы частично. По SEO и ТехМедПорталу <span class="under">есть несколько промежуточных результатов</span>, которые можно показать.</li>
+      <li>Понемногу, день за днём я начинаю <span class="under">понимать, какую ценность создаю</span> и за что мне платят. Я вижу это в своих ежедневных рабочих отчётах: там я фиксирую, какие навыки применила, к каким результатам пришла и какие задачи бизнеса были закрыты благодаря мне.</li>
+      <li>Я точно знаю, сколько у меня денег, какой у меня график платежей и на что я тратила деньги за неделю.</li>
+      <li>В разговорах я больше <span class="under">замечаю себя</span>: могу слушать человека и при этом замечать своё состояние и намерение. Я меньше «отсиживаюсь», поэтому общение меньше меня выматывает.</li>
+      <li>Практики «Симурга» появляются в моих днях чаще, чем сейчас. После пропуска я просто возвращаюсь к ним.</li>
+    </ul>
+    <p>Проверка — в феврале 2027 года, через четыре месяца шестимесячного проекта.</p>
+  </div>
+</section>
+
+<!-- ================= НАМЕРЕНИЕ ================= -->
+<section class="panel" id="nam" role="tabpanel" aria-labelledby="t-nam" hidden>
+  <div class="col">
+    <span class="badge">Намерение на обучение</span>
+    <p class="big-quote" style="margin-top:18px">Я учусь быть <em>взрослой</em> во «взрослых» делах.</p>
+    <div class="qa" style="margin-top:12px">
+      <h3>Что я хочу изменить?</h3>
+      <p>Я хочу сменить детское отношение к своей жизни на взрослое и стать хорошим управляющим: видеть, на что уходят моё время, силы и деньги, брать за них ответственность и доводить дела до результата.</p>
+      <p>Мой ключ — <span class="under">осознанность</span>. Когда я в моменте, моя взрослая часть уже умеет включаться.</p>
+    </div>
+    <div class="qa">
+      <h3>Что я буду для этого делать?</h3>
+      <ol class="steps">
+        <li><div><b>Смотреть уроки, приходить на встречи и писать в чате с намерением</b><p>Находить и брать для себя то, что поможет справиться с моей главной трудностью сейчас и измениться.</p></div></li>
+        <li><div><b>Делать домашние задания</b><p>Делать их так, чтобы лучше разобраться в себе и находить выход из негативных черт характера. Когда отстаю, задавать вопросы, а не прятаться.</p></div></li>
+        <li><div><b>На группах делиться своими наблюдениями</b><p>Рассказывать, как проходят мои изменения в рамках обучения.</p></div></li>
+        <li><div><b>Внимательно слушать остальных на группе</b><p>Через опыт других брать то, что поможет мне глубже разобраться в себе и пройти свой путь.</p></div></li>
+        <li><div><b>Каждую неделю фиксировать промежуточные результаты</b><p>Учиться видеть, что мне по силам, а что пока нет. Делать то, что понемногу меняет мою реальность в сторону главного изменения, записывать это и делиться в чате.</p></div></li>
+        <li><div><b>Каждый день делать хотя бы одну практику «Симурга»</b><p>Намерение утром, медитация, простукивания, самонаблюдения или вечерний вопрос «Как я сейчас?». Больше, чем 0.</p></div></li>
+        <li><div><b>Замечать свой детский хоровод</b><p>Ловить «ну ничего страшного» и «это слишком сложно» и записывать. Писать 4 наблюдения в неделю и 2 из них сдавать ментору.</p></div></li>
+        <li><div><b>Несколько раз в день возвращаться в момент</b><p>Замечать, что выпала в автоматизм, и спрашивать себя: «Где я? Что я сейчас делаю?»</p></div></li>
+        <li><div><b>Реагировать на свою усталость</b><p>Заметила усталость — делаю одно действие заботы: откладываю телефон, ложусь раньше.</p></div></li>
+        <li><div><b>Каждый рабочий день выбирать одну главную задачу на 1,5 часа</b><p>Ловить «это слишком сложно» и всё равно делать первые 15 минут. Если застряла — задавать вопрос, а не уходить в лёгкие дела.</p></div></li>
+        <li><div><b>Раз в неделю смотреть на свои деньги</b><p>Сколько у меня на счету и на что ушли деньги за неделю.</p></div></li>
+        <li><div><b>В разговоре замечать себя</b><p>Когда с моей стороны теряется энергия, спрашивать себя: «Чего я сейчас хочу от этого разговора?» — и делать один шаг из своей позиции.</p></div></li>
+      </ol>
+    </div>
+    <div class="qa">
+      <h3>В каком состоянии?</h3>
+      <p>Спокойно и всерьёз, с любопытством к себе и без самокритики. Мой девиз на этот период — «Быть там, где результат вероятнее»: двигаться через промежуточные результаты. Когда не хочется включаться — «Больше, чем 0».</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= СИЛА (красная) ================= -->
+<section class="panel" id="sila" role="tabpanel" aria-labelledby="t-sila" hidden>
+  <div class="red">
+    <div class="intro">
+      <div><span class="sq" aria-hidden="true"></span><p>Только то, что подтверждено фактами или словами других людей.</p></div>
+      <h2 class="big">В чём <span>я</span> <em>сильна</em></h2>
+    </div>
+    <ol class="nlist">
+      <li><span class="n">01</span><span class="t">Системность</span><span class="d">Ментор по проектам сказал: «Системность у тебя в крови». Регламент отдела продаж я написала за один день. Год вела аналитику по закрытию кредитов.</span></li>
+      <li><span class="n">02</span><span class="t">Чувство продукта и маркетинг</span><span class="d">Мне всю жизнь говорят, что я «прирождённый маркетолог». Когда я говорю о маркетинге, ко мне прислушиваются, а благодаря моей упаковке подняли цену интенсива.</span></li>
+      <li><span class="n">03</span><span class="t">Быстро учусь под задачу</span><span class="d">С нуля освоила Tilda и сделала сайт. Курс по воинскому учёту сдала за 2 дня на 100 баллов. Бирки через ИИ — коллеги в восторге. На работе у людей нет сомнений, что я разберусь. Сомнения есть только в моей надёжности и организованности: я могу «слететь и перестать работать».</span></li>
+      <li><span class="n">04</span><span class="t">Тёплое общение</span><span class="d">Выхожу к людям минимум 4 раза в месяц и вытаскиваю всех. Сама организовала свой день рождения, и ещё несколько дней после него мне писали, каких тёплых людей я собрала и как тепло было в тот вечер.</span></li>
+      <li><span class="n">05</span><span class="t">Рефлексия и письмо</span><span class="d">Сотни ретроспектив, наблюдения, письма себе.</span></li>
+      <li><span class="n">06</span><span class="t">Забота и щедрость</span><span class="d">К юбилею дедушки сделала фильм — «все плакали». Продуманные подарки маме, детям, подругам. Когда поддерживаю человека, я всегда спрашиваю: «Как ты теперь себя чувствуешь?» — и раз за разом слышу: «Мне стало легче». Если не получилось, пробую ещё раз, пока не увижу, что человеку стало легче. В сентябре люди из разных кругов одновременно начали в шутку называть меня «службой психологической помощи».</span></li>
+      <li><span class="n">07</span><span class="t">Устойчивость в кризисе</span><span class="d">В семейном кризисе в январе 2026 года я собрала документы, увела маму и всё скоординировала. В феврале на работе я единственная сохранила устойчивость, и благодаря этому мы запустили проект в срок и реализовали его. Всё реже я реагирую на ситуации стрессом и паникой, а устойчивости внутри становится больше. В последние месяцы на это моё качество опираюсь не только я, но и другие.</span></li>
+      <li><span class="n">08</span><span class="t">Иду сквозь эмоции</span><span class="d">Пошла в продажи, хотя всегда боялась звонить. Раз за разом замечаю, что мне всё проще и легче начинать, даже если страшно или непонятно. Я испытываю эти чувства, но всё чаще продолжаю делать то, что от меня требуется.</span></li>
+      <li><span class="n">09</span><span class="t">Доверие к себе</span><span class="d">Верность своему решению. Всё больше опираюсь на собственные ощущения. Когда всё окружение советовало мне увольняться, я не вступала в конфликт ни снаружи, ни внутри. Я внимательно слушала и разбиралась, почему люди так думают, чтобы взять это в размышления. Но зависимости от их мнения не было — было доверие к себе: «Последнее слово в моих решениях всё равно остаётся за мной».</span></li>
+    </ol>
+
+    <div class="intro" style="margin-top:56px;margin-bottom:6px">
+      <div><span class="sq" aria-hidden="true"></span><p>Мои живые цели до 2030 года и то, что стоит между мной и каждой из них.</p></div>
+      <h2 class="big">Что <em>мешает</em> <span>моим целям</span></h2>
+    </div>
+    <div class="rcards">
+      <div class="rcard"><span class="g">Цели 16–18</span><h3>Стать профессионалом, который делает результат</h3><p class="m"><b>Мешает</b>Нет профессии и экспертизы, всё сразу, нет рабочего ритма</p><p class="u"><b>Усилить</b>Главная задача утром, одна точка результата в месяц, одно профильное обучение до конца</p></div>
+      <div class="rcard"><span class="g">Цель 06</span><h3>Здоровье и энергия</h3><p class="m"><b>Мешает</b>Сон в 2–3 ночи, еда как способ снять напряжение, пропуск назначений</p><p class="u"><b>Усилить</b>Вечер для себя, анализы и эндокринолог до конца октября, психолог</p></div>
+      <div class="rcard"><span class="g">Цели 09–10</span><h3>Деньги и самостоятельность</h3><p class="m"><b>Мешает</b>Обучения в рассрочку, нет учёта, опора на родителей</p><p class="u"><b>Усилить</b>Вернуть учёт, который уже работал, без новых рассрочек до закрытия текущей. Учиться навыкам заработка денег и управления ими</p></div>
+      <div class="rcard"><span class="g">Цели 05, 07, 08</span><h3>Отношения и женственность</h3><p class="m"><b>Мешает</b>Не чувствую в себе женщину и откладываю сферу «до готовности»</p><p class="u"><b>Усилить</b>Чаще чувствовать себя девушкой уже сейчас, даже без партнёра</p></div>
+      <div class="rcard"><span class="g">Цели 23–25</span><h3>Друзья и окружение</h3><p class="m"><b>Мешает</b>Не могу найти баланс между разными сферами. Хочется сделать общение глубже, шире и богаче</p><p class="u"><b>Усилить</b>Углублять свои интересы, связь с собой, планирование, баланс и свои границы — и приносить в общение такую новую себя</p></div>
+      <div class="rcard"><span class="g">Цели 01–02</span><h3>Род и семья</h3><p class="m"><b>Мешает</b>Неловкость «не знаю, что сказать»</p><p class="u"><b>Усилить</b>Ставить любовь выше неловкости, общаться просто и коротко</p></div>
+      <div class="rcard"><span class="g">Цели 06–08</span><h3>Быть красивой девушкой</h3><p class="m"><b>Мешает</b>Нет включённости, поверхностность</p><p class="u"><b>Усилить</b>Больше внимательности к своему здоровью и внешнему виду. Помнить, что на красоту тоже нужны сила, время и усилия</p></div>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var S=[
+    {id:"self",short:"С собой",name:"Отношения с собой",spring:4,now:5,
+     line:"Внутри я стала теплее к себе относиться, но всё ещё очень требовательна к себе. Гордыня, жадность и зависимость продолжают во мне доминировать.",
+     live:"Я чувствую себя стабильнее и собраннее, чем весной, и меньше паникую. «Больше, чем 0» каждый день — уже моя норма. Неуверенность я воспринимаю как подсказку, чему научиться и где попросить помощи.",
+     hard:["Я часто сокрушаюсь: никуда не двигаюсь, отстаю, нет результатов, снова подвожу, в моей жизни снова бардак.","Я не даю себе достаточно времени и внимания.","Я отмахиваюсь от своих потребностей словами «ничего страшного».","У меня нет режима.","Время с собой я чаще провожу в телефоне."],
+     pat:"Когда день проходит без результата, я ругаю себя за то, что снова не сдвинулась. Но заботу о себе — отдых, сон, внимание к своему состоянию — при этом считаю чем-то второстепенным. Получается, что от себя я требую результатов, а сил на них себе не даю.",
+     was:"В 2024 году фоном звучало «я не могу» и «я неудачница», в январе 2025 года — «этот год последний». Сейчас тяжёлых мыслей почти нет, плохо о себе я думаю редко, а вслух признаю свои достоинства.",
+     inn:"Относиться к своему времени и энергии всерьёз, как к важной задаче.",
+     out:"Каждый день выделять время только для себя и заботиться о своей энергии: сон, отдых, здоровье.",
+     intent:"Я решаю по-настоящему уделять себе время и внимание. Для этого каждый день выделяю время только для себя и отношусь к нему как к важному делу. Я делаю это бережно и всерьёз.",
+     watch:"Где я отмахиваюсь от себя, не включаюсь в свои дела и игнорирую свои потребности."},
+    {id:"partner",short:"Партнёр",name:"Отношения с партнёром",spring:0,now:1,
+     line:"Сфера на паузе: я её избегаю, потому что не чувствую в себе женщину.",
+     live:"Сейчас я избегаю этой сферы. Мне кажется, что меня никто не захочет: я считаю себя некрасивой, не умею общаться интересно и флиртовать. А главное — я не чувствую в себе женщину, и это мой основной стопор.",
+     hard:["Не чувствую в себе женщину.","Считаю себя некрасивой и не верю, что могу кому-то понравиться.","Не умею общаться интересно и флиртовать.","Мне кажется, что того, кого я хочу, я пока недостойна.","Не готова мириться с плохим отношением к себе — поэтому лучше никак."],
+     pat:"Я откладываю эту сферу, пока не приведу себя в порядок и не повзрослею внутренне. Но у этой готовности нет даты, поэтому сфера стоит на паузе годами. «Некрасивая» и «недостойна» — это мои мысли о себе, а не факты, и именно их я хочу увидеть в наблюдениях.",
+     was:"Весной 2026 года я писала, что закрыла двери в эту сферу. В сентябре 2026 года я сначала обсудила эту тему с психологом, а потом решила попробовать и сходила с подругой в тур по барам. Я общалась с парнями — это был шаг через страх. Я больше не чувствую в теле панического ужаса перед романтическим интересом в мою сторону. Я разрешаю к себе прикасаться, обнимать меня, и чувствую себя спокойно. В баре я заметила, что меня тянет к тёплым людям. Значит, мой страх «влюбиться в того, кто будет плохо со мной обращаться» бессмысленен: я не буду с таким человеком, потому что сама уже не отношусь к себе плохо и для меня это не норма. Я чувствую признание и уважение к себе как к женщине.",
+     inn:"Чаще чувствовать себя девушкой, даже пока партнёра нет.",
+     out:"Делать для себя то, в чём я чувствую себя женщиной: уход, образ, цветы для себя, танец.",
+     intent:"Я решаю знакомиться с собой как с женщиной уже сейчас. Для этого каждую неделю делаю для себя одну вещь, в которой чувствую себя девушкой, и замечаю, как это отзывается во мне. Я делаю это мягко и с любопытством.",
+     watch:"Моменты, когда я чувствую себя женщиной, и моменты, когда это чувство пропадает."},
+    {id:"kids",short:"Дети",name:"Отношения с детьми",spring:0,now:1,
+     line:"Я хочу детей, но пока не вижу условий, чтобы стать мамой или опекуном.",
+     live:"Своих детей у меня нет. Я хочу детей, но не вижу в своей жизни ни внутренних, ни внешних условий, чтобы стать мамой или опекуном.",
+     hard:["Мне не хватает энергии на повседневные дела, и это сильно стопорит меня в желании стать мамой или опекуном.","Я не до конца доверяю себе в том, что справлюсь материально.","Я хочу быть уверенной, что смогу быть тем взрослым, который закроет и эмоциональные, и материальные потребности ребёнка. В эмоциональной части я сейчас более-менее уверена. А в деньгах и жизненных трудностях не уверена, что смогу справиться сама: доверия к себе здесь нет.","Нет партнёра. Сначала я хочу пойти в историю отношений."],
+     pat:"Мечта о детях отложена вместе с отношениями и здоровьем: пока не сдвинутся они, не сдвинется и она.",
+     was:"В 2023 году я окончила школу приёмных родителей. Опыт заботы о ребёнке у меня тоже есть: почти два года я жила вдвоём с младшим братом. Сейчас я более уверена в себе эмоционально: вижу, что стала устойчивее, и начала на это опираться.",
+     inn:"Не закрывать эту мечту, а признавать её.",
+     out:"Заботу о здоровье считать шагом и к этой мечте тоже.",
+     intent:"Я решаю беречь свою мечту о детях. Для этого забочусь о своём здоровье и взрослею внутренне, помня, ради чего ещё я это делаю. Я делаю это спокойно и с надеждой.",
+     watch:"Что я чувствую, когда вижу чужих детей или слышу о чужой беременности."},
+    {id:"parents",short:"Родители",name:"Отношения с родителями и семьёй",spring:7,now:7,
+     line:"Внутри любовь, упрёки не выбивают. Но с папой, бабушкой и братом мешает неловкость.",
+     live:"Рядом с родителями я чувствую любовь и то, что я их дочь. Их недовольство на мне уже не сказывается, я переживаю, только когда вижу их уставшими. Младшему брату 16 лет, и я чувствую себя его старшей сестрой на сто процентов.</p><p>С папой мы начали чуть больше общаться. Даже когда у него произошёл срыв, внутри меня было скорее переживание за него: простое человеческое сочувствие, что он оказался в такой ситуации, где не смог с собой справиться, и это вылилось в гневную реакцию, наполненную болью.</p><p>Я с удивлением обнаружила, что, хотя ситуация была страшная, внутри меня ничего не изменилось. Как дочь я так же тепло к нему относилась, потому что он мой отец и много хорошего у меня от него. А сочувствие шло из взрослой части: как взрослая я понимаю, что внутри у человека может быть много боли. Мой папа и так очень хорошо справляется с учётом испытаний, которые он прошёл и проходит до сих пор.</p><p>И после этой ситуации наша связь, наоборот, будто стала прочнее. Через наблюдение я ещё раз соединилась с той красотой, что у меня от него. А он наконец-то обсудил меня в кабинете психолога. Напряжение из наших отношений ушло, скорее осталась неловкость.</p><p>Весь этот год внутри меня к нему только любовь — как и к маме, и ко всем членам семьи. И самое удивительное для меня, что это отношение стабильно и не меняется совсем. Я могу испытывать к ним разные эмоции, но внутреннее состояние в их сторону одно и то же: любовь и благодарность.",
+     hard:["С папой я теряюсь и не знаю, как общаться. Второй год не дарю ему подарок на день рождения.","Бабушке и дедушке не звоню: нервничаю и не знаю, о чём говорить. Они обижаются.","Брату часто не отвечаю, хотя он тянется ко мне.","Как взрослый человек я не могу простить родителям некоторые вещи, но как дочь я внутри это отпустила, и это не болит. Иногда, крайне редко, меня злят ситуации с братом, где он очевидно страдает из-за их решений. Но в последние разы я не замечала в себе и этого, потому что сразу выбирала оставаться дочерью и сестрой: поддерживать из своей роли и быть рядом."],
+     pat:"Я не знаю, что сказать, мне неловко, и я откладываю звонок или ответ. Потом мне стыдно, и следующий звонок становится ещё труднее.",
+     was:"В 2023 году в общении с родителями были вина, страх и резкие реакции, в октябре 2025 года — желание закрыться. Сейчас я чувствую любовь, а в мае 2026 года впервые попросила маму о помощи.",
+     inn:"Ставить внимание и любовь к близким выше любой неловкости.",
+     out:"Учиться быть простой и лёгкой в общении. Тогда появится, о чём поговорить. Перестать избегать общения и начать делать родовую книгу. Именно из-за этих двух пунктов я ставлю сфере 7, а не выше.",
+     intent:"Я решаю ставить любовь к близким выше неловкости. Для этого несколько раз в месяц звоню или пишу папе, бабушке с дедушкой или брату — коротко и просто, как есть. Я делаю это легко и с теплом.",
+     watch:"Момент перед звонком или ответом: какая мысль меня останавливает."},
+    {id:"people",short:"Люди",name:"Отношения с другими людьми",spring:6,now:6,
+     line:"Тёплый широкий круг, и я хотела бы теперь обогащать своё общение с людьми новым опытом, проживаниями, жизнью, размышлениями и осознаниями.",
+     live:"Мой круг — тёплая семья и мои друзья: Ася, Даша, Катя, Настя, Оля, Любава, Алина и другие. Я сама собираю людей вместе. С близкими я чувствую себя свободно и легко. В целом я стала более открытой, а главное — панического ужаса и избегания людей у меня больше нет.",
+     hard:["Пока мне сложно балансировать между социальными и личными задачами.","Долго не могу записать своё сообщение и выразить мнение.","Всё равно бывают ситуации, когда я могу долго не отвечать людям. Но сейчас это просто потому, что я в суете или чувствую потерянность.","Иногда нервничаю, что со мной будет не о чем поговорить, и не знаю, как вести диалог.","Иногда мне сложно выразить, что я хочу от общения, и обозначить свои намерения. Часто я просто решаю исключить разговоры о себе из диалога.","На работе мне сложно вести коммуникацию, где я с уважением вношу ясность, отстаиваю свои интересы и доношу до людей, что мне от них нужно. В рабочих разговорах я периодически чувствую себя маленькой, или, наоборот, слишком горделивой, или очень неловкой: неуместно ставлю себя выше или ниже."],
+     pat:"Мне важно быть нужной и полезной, поэтому я больше отдаю, чем беру. Мне нужно научиться не только отдавать, но и брать из общения то, что мне сейчас нужно: обозначать это и помогать людям тоже дарить мне любовь. Я чувствую, что им хотелось бы, но они не знают как. Здесь я по привычке продолжаю быть немного отчуждённой. И мне очень нужно находить баланс между общением и личными задачами.",
+     was:"В 2023 году ехать к людям было стрессом: я думала, что со мной никто не захочет общаться. В январе 2025 года я не пошла к подруге на день рождения, а в мае поехала к Даше, где было много новых людей, — и мне было комфортно. В 2026 году я сама организовала свой день рождения.",
+     inn:"Поддерживать других, не отменяя себя. Учиться потребностям Уважения и Свободы быть собой. Укреплять Принятие и Признание.",
+     out:"Пойти на тренинг по коммуникациям. Мне здесь скорее не хватает навыков и понимания, как в целом можно. Учителя, чей подход я разделяю и кому доверяю, я уже нашла.",
+     intent:"Я решаю общаться, не теряя себя: не только отдавать, но и брать из общения то, что мне нужно. Для этого я иду на тренинг по коммуникациям, в разговорах рассказываю о себе и прямо говорю, что мне нужно, на работе с уважением вношу ясность и заранее решаю, сколько времени отдаю общению, а сколько своим задачам. Я делаю это открыто, с уважением к себе и к людям.",
+     watch:"Моменты, когда в разговоре с моей стороны теряется энергия. Моменты, когда внутри меня неуместно включается либо гордыня, либо комплекс неполноценности с зависимостью."},
+    {id:"work",short:"Работа",name:"Работа и реализация",spring:2,now:2,
+     line:"Не сдвинулось: нет профессии, экспертизы и стабильности. Это самая раздражающая меня сейчас сфера. Когда я уже в ней продвинусь? У неё одна из самых низких оценок, и она тянет за собой деньги и мою уверенность в себе как во взрослой. Очень надеюсь, что в этот раз сдвинусь.",
+     live:"Я люблю работать, но чувствую себя ненадёжной и «без места». Я хочу быть профессионалом: человеком, у которого получается, которому доверяют, платят и от которого уходят довольными, потому что он делает результат. Сейчас этого нет, и это меня огорчает и злит. Каким именно экспертом и в чём я хочу стать, внутри меня пока ответа нет.",
+     hard:["Нет профессиональных навыков и экспертизы, по работе я толком не учусь.","У меня нет портфолио, опыта и кейсов, на которые я могла бы опереться.","Работаю нестабильно и неэффективно.","Не держу обещания и сроки, не выдаю результат вовремя.","Ключевые проекты, SEO и ТехМедПортал, пока на старте."],
+     pat:"Главную задачу я откладываю и ухожу в мелкие, чужие и срочные дела. Ничего не доводится до видимой точки, и мне кажется, что я ничего не сделала.",
+     was:"По моим ощущениям, здесь ничего не сдвинулось. Задачи были: журналы, сайт интенсива, оффер, курс по воинскому учёту, первая лицензионная проверка. Профессии, экспертизы и стабильности они мне не дали. Но дали тот опыт, на который я хочу опираться, чтобы здесь как раз двинуться дальше.",
+     inn:"Засчитывать результат по точке, названной заранее, а не по ощущению «маловато». Определять ключевые промежуточные результаты и ясно видеть, как идут дела. Уметь обращаться за помощью. Делать не из перфекционизма, а из эффективной достаточности. Делать целенаправленно, отдавая себе отчёт, что я делаю и зачем. Делегировать всё остальное. Убирать поверхностность и идти к ответственности хотя бы в ключевых задачах.",
+     out:"Начинать день с главной задачи. Для SEO и ТехМедПортала — одна точка результата в месяц. Одно профильное обучение довести до конца.",
+     intent:"Я решаю стать человеком, на которого можно положиться в работе. Для этого каждый день начинаю с одной главной задачи и довожу её до промежуточного результата — достаточно, а не идеально. Если застреваю, прошу помощи. Я делаю это спокойно, понимая, зачем.",
+     watch:"Как обстоят дела с постановкой и выполнением главной задачи каждый рабочий день."},
+    {id:"money",short:"Деньги",name:"Деньги",spring:2,now:2,
+     line:"Иду к финансовой грамотности 2.0. Хочу ощутить, как это, когда деньги на счету всегда есть и не тратятся бездумно.",
+     live:"У меня постоянное чувство, что сама себя я не обеспечу. Деньги я воспринимаю как оценку себя, а не как инструмент.",
+     hard:["Учёт не веду. Даже то, что откладываю, трачу в ноль и периодически попадаю в состояние «денег нет».","Такси и праздники оплачивают родители. Ответственность за деньги на себя я пока не беру.","Не уверена в себе как во взрослом, который всегда сможет заработать. Навыков управлять деньгами, зарабатывать сверх зарплаты, называть цену своей работе, распределять и приумножать деньги пока нет.","Стыжусь своей ситуации с деньгами."],
+     pat:"Когда хочу вырасти, я покупаю обучение в рассрочку. Обучение не доводится до конца, а долг остаётся. Так было в 2023, 2025 и 2026 годах.",
+     was:"Год я закрывала кредиты: вела аналитику и таблицы — и в августе 2025 года закрыла все. Это был сильный внутренний рост и надежда, что я выберусь из ямы. Значит, систему я уже строила, и она работала. Теперь нужно научиться не влезать в финансовые обязательства и организовывать себе источники заработка в любых условиях.",
+     inn:"Относиться к деньгам как к инструменту, а не как к оценке себя. Относиться к деньгам осознанно и включённо. Узнать больше про эту систему.",
+     out:"Вернуть учёт, который уже работал. Не брать новых рассрочек, пока не закрыта текущая. Тестировать, пробовать и думать, как я могу зарабатывать ещё. Изучать тему денег, накоплений, заработка и приумножения.",
+     intent:"Я решаю начать видеть свои деньги. Для этого раз в неделю смотрю, сколько у меня на счету и на что ушли деньги за неделю. Я делаю это спокойно, без самокритики.",
+     watch:"Момент перед покупкой обучения или вещи: что я думаю и чувствую."},
+    {id:"health",short:"Здоровье",name:"Здоровье и тело",spring:1,now:3,
+     line:"Каждый день я физически устаю, а в анализах дефициты.",
+     live:"Анализы показывают дефициты, сон, еда и вода не сдвинулись, и каждый день я чувствую себя физически уставшей. Я наблюдаюсь у эндокринолога, а в сентябре впервые сходила к психологу и хочу ходить дальше, чтобы учиться заботе о себе.",
+     hard:["Ложусь в 2–3 ночи и не высыпаюсь.","Компульсивно переедаю.","Почти не пью воду.","Пропускаю витамины и назначения. В 2025 году лечение мне выписали, но я его не соблюдала.","Энергии на день не хватает."],
+     pat:"Когда я напряжена или устала, я снимаю это едой и телефоном. «Компульсивное переедание — мой привычный способ снять напряжение». Со сном, питанием, водой и регулярным приёмом таблеток и витаминов ситуация из года в год не меняется: я ложусь в 2–3 ночи, почти не пью воду, а назначения врачей начинаю и бросаю. Забота о теле до сих пор не стала регулярной.",
+     was:"В 2024 году я полностью отрицала проблемы со здоровьем. В 2025–2026 годах я дошла до эндокринолога и пошла к психологу. В 2025 году у меня было 56 тренировок.",
+     inn:"Для начала начать замечать своё состояние и считать свою усталость очень важной для внимания. Проявлять к себе уважение и включённость.",
+     out:"Ложиться до полуночи. До конца октября сдать анализы и сходить к эндокринологу. Ходить к психологу.",
+     intent:"Я решаю замечать свою усталость и относиться к ней с уважением. Для этого каждый вечер спрашиваю себя: «Как я сейчас?» — и, если устала, выбираю одно действие заботы: лечь раньше, выпить воды или отложить дела. Я делаю это бережно и без самокритики.",
+     watch:"Моменты физической усталости: замечаю ли я их и как на них реагирую."},
+    {id:"spirit",short:"Духовное",name:"Духовное развитие",spring:4,now:4,
+     line:"Внутри есть вера в жизнь и свой путь, но ежедневных практик нет.",
+     live:"Внутри у меня есть вера в саму жизнь и свой путь, любовь и благодарность. Смысл для меня — в людях: «люди и есть сама жизнь». Но ежедневных практик у меня сейчас нет.",
+     hard:["Нет ежедневных практик: намерения, медитации, наблюдений.","Знаний много, а встраивания мало: курс я законспектировала до конца, но поток не прошла.","Когда отстаю, мне стыдно, и я ухожу из курса.","Мало тишины.","Многое делаю на автомате."],
+     pat:"Я отстаю, мне становится стыдно, я не возвращаюсь — и отстаю ещё больше. Из-за нехватки осознанности мне сложно включиться в жизнь и в практики.",
+     was:"В 2023 году я писала, что, возможно, оставлена Богом. Сейчас внутри есть вера в жизнь, свой путь и благодарность.",
+     inn:"Считать практику курса своей ежедневной практикой.",
+     out:"Пройти поток включённо: идти к тому, чтобы намерение было каждое утро, делать одно наблюдение в день и сдавать домашние задания в срок.",
+     intent:"Я решаю каждый день делать на пути эмоциональной зрелости больше, чем 0. Для этого утром пишу намерение на день, хотя бы в одно предложение, а вечером вспоминаю один момент, где я была неосознанной, и один, где была здесь и сейчас. Если пропускаю, просто возвращаюсь на следующий день. Я делаю это с любопытством и без оценки себя.",
+     watch:"Для начала замечать моменты и время, когда я была неосознанной. Чаще погружать себя в момент здесь и сейчас. Стремиться на пути эмоциональной зрелости каждый день делать больше, чем 0."}
+  ];
+
+  /* ===== столбчатая диаграмма ===== */
+  function drawChart(svgId,tipId,chartId){
+  var svg=document.getElementById(svgId), tip=document.getElementById(tipId), chart=document.getElementById(chartId);
+  if(!svg){return;}
+  var W=900,H=330,L=34,R=10,T=16,B=48, plotW=W-L-R, plotH=H-T-B, n=S.length, slot=plotW/n, bw=Math.min(26,slot*0.28);
+  function y(v){return T+plotH-(v/10)*plotH;}
+  var NS="http://www.w3.org/2000/svg", g="";
+  for(var v=0;v<=10;v+=2){g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#efe9e1" stroke-width="1"/>'+
+    '<text x="'+(L-10)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="#9a928a" font-family="Manrope, system-ui, sans-serif">'+v+'</text>';}
+  function rbar(x,top,w,col){var h=T+plotH-top; if(h<=0){return '';} var r=Math.min(6,h/2);
+    return '<path d="M'+x+','+(T+plotH)+' V'+(top+r)+' Q'+x+','+top+' '+(x+r)+','+top+' H'+(x+w-r)+' Q'+(x+w)+','+top+' '+(x+w)+','+(top+r)+' V'+(T+plotH)+' Z" fill="'+col+'"/>';}
+  S.forEach(function(s,i){
+    var cx=L+slot*i+slot/2, x1=cx-bw-2, x2=cx+2;
+    g+='<g class="grp" data-i="'+i+'" tabindex="0" role="img" aria-label="'+s.name+': весна '+(s.spring===null?'нет оценки':s.spring)+', октябрь '+s.now+'" style="cursor:pointer;outline:none">';
+    g+='<rect x="'+(cx-slot/2+2)+'" y="'+T+'" width="'+(slot-4)+'" height="'+plotH+'" fill="transparent" class="hit"/>';
+    if(s.spring===null){g+='<line x1="'+x1+'" x2="'+(x1+bw)+'" y1="'+(T+plotH-1)+'" y2="'+(T+plotH-1)+'" stroke="#f5c7a1" stroke-width="3" stroke-linecap="round"/>';}
+    else if(s.spring===0){g+='<line x1="'+x1+'" x2="'+(x1+bw)+'" y1="'+(T+plotH-1)+'" y2="'+(T+plotH-1)+'" stroke="#f5c7a1" stroke-width="3" stroke-linecap="round"/>';}
+    else{g+=rbar(x1,y(s.spring),bw,"#f5c7a1");}
+    g+=rbar(x2,y(s.now),bw,"#e5763a");
+    g+='<text x="'+(x2+bw/2)+'" y="'+(y(s.now)-7)+'" text-anchor="middle" font-size="13" font-weight="600" fill="#1d1b19" font-family="Onest, Manrope, system-ui, sans-serif">'+s.now+'</text>';
+    g+='<text x="'+cx+'" y="'+(H-B+22)+'" text-anchor="middle" font-size="12.5" fill="#4a443e" font-family="Manrope, system-ui, sans-serif">'+s.short+'</text>';
+    g+='</g>';
+  });
+  g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+(T+plotH)+'" y2="'+(T+plotH)+'" stroke="#e2dad0" stroke-width="1"/>';
+  svg.innerHTML=g;
+  function showTip(i,ev){
+    var s=S[i]; tip.innerHTML='<b>'+s.name+'</b>Весна 2026: '+(s.spring===null?'не оценивала':s.spring)+'<br>Октябрь 2026: '+s.now;
+    var cr=chart.getBoundingClientRect(), gr=svg.querySelectorAll(".grp")[i].getBoundingClientRect();
+    var left=gr.left-cr.left+gr.width/2-80; left=Math.max(8,Math.min(left,cr.width-178));
+    tip.style.left=left+"px"; tip.style.top=(gr.top-cr.top+10)+"px"; tip.classList.add("on");
+    svg.querySelectorAll(".grp").forEach(function(el,j){el.style.opacity=(j===i?1:.45);});
+  }
+  function hideTip(){tip.classList.remove("on");svg.querySelectorAll(".grp").forEach(function(el){el.style.opacity=1;});}
+  svg.querySelectorAll(".grp").forEach(function(el){
+    var i=+el.getAttribute("data-i");
+    el.addEventListener("mouseenter",function(){showTip(i);});
+    el.addEventListener("focus",function(){showTip(i);});
+    el.addEventListener("click",function(){showTip(i);});
+    el.addEventListener("mouseleave",hideTip);
+    el.addEventListener("blur",hideTip);
+  });
+  }
+  drawChart("bars","tip","chart");
+
+  /* ===== сферы ===== */
+  var wrap=document.getElementById("spheres");
+  S.forEach(function(s){
+    var d=document.createElement("div"); d.className="sph"; d.id="s-"+s.id;
+    var spr=s.spring===null?'весной —':'весной '+s.spring;
+    d.innerHTML='<div class="shead"><span><span class="sname">'+s.name+'</span><span class="sline">'+s.line+'</span></span>'+
+      '<span class="score" aria-label="Оценка '+s.now+' из 10">'+s.now+'<small>'+spr+'</small></span></div>'+
+      '<div class="sbody">'+
+      '<div class="qa"><h3>Как я проживаю эту сферу?</h3><p>'+s.live+'</p></div>'+
+      '<div class="qa"><h3>Что мне трудно?</h3><ul>'+s.hard.map(function(h){return '<li>'+h+'</li>';}).join('')+'</ul></div>'+
+      '<div class="qa"><h3>Что повторяется?</h3><p>'+s.pat+'</p></div>'+
+      '<div class="qa"><h3>Что уже изменилось?</h3><p>'+s.was+'</p></div>'+
+      '<div class="qa"><h3>Что я хочу изменить?</h3><div class="two"><div><span class="lab">Внутри</span><p>'+s.inn+'</p></div><div><span class="lab">Снаружи</span><p>'+s.out+'</p></div></div></div>'+
+      '<div class="qa"><h3>Моё намерение</h3><p class="thesis" style="font-weight:400">'+s.intent+'</p></div>'+
+      '<div class="qa"><h3>Что наблюдать?</h3><p>'+s.watch+'</p></div>'+
+      '</div>';
+    wrap.appendChild(d);
+  });
+
+
+  /* ===== биография ===== */
+  var P=[{"yr": "2022", "sub": "Опека над братом. Депрессия", "lab": "С чем вышла", "out": ["Поступила в магистратуру «Управление цифровыми проектами», но не смогла включиться в учёбу, и меня отчислили.", "С осени 2021 года по февраль 2023 года я опекала младшего брата, потому что родители с ним не справлялись. Мне было важно помочь ему и дать почувствовать, что он важен, любим и с ним всё в порядке. Я изучала детскую психологию, воспитывала его и помогала ему лучше понимать свои эмоции.", "Рабочие проекты не получались. На фрилансе были серьёзные проблемы с несколькими заказчиками.", "В феврале я рассталась с девушкой: она уехала в другую страну.", "Я разошлась с единственной тогда подругой."], "inn": ["Это было время отчаяния и одиночества. Я не видела своего будущего.", "С братом было сложно: мне приходилось учиться выдерживать в моменте и его эмоции, и свои.", "Я очень тяжело переживала, что у меня не получается с работой и учёбой.", "Физически я чувствовала усталость.", "Казалось, что я ни с чем не справилась и не справляюсь.", "И всё же я видела, что мои труды приносят плоды: брат менялся на глазах. По сути, я научила его тому, чему когда-то меня научил психолог: базово понимать свои эмоции, говорить о них с близкими и верить, что внутри есть силы справиться. Хоть внутри я и была пуста, я не считала себя неважной и ненужной — хотя бы для самой себя. Это я передала и брату. В его жизни появился близкий человек, которому можно доверять: я ни разу не нарушила данное ему обещание, ни разу его не оттолкнула и, когда мы были вместе, была с ним всем вниманием.", "К концу 2022 года я осталась без друзей. В этом одиночестве я неожиданно обрела связь с собой и всецело прожила свой новый девиз «Марина, не отпускай свою руку». Я признала, что нахожусь в тяжёлом состоянии, и решила начать с мелочей: одна минута медитации, одна страница книги по стоицизму, ужин для брата к его возвращению из школы и вечерний вопрос, как прошёл его день. Это стало моей точкой опоры. Я начала понемногу сдерживать обещания и себе."], "exit": "опыт заботы о брате, связь с собой и девиз «Марина, не отпускай свою руку».", "motto": "«Марина, не отпускай свою руку»", "mottoText": "Я приняла решение протянуть себе руку и постараться вытащить себя со дна. Требовать от себя большего я не могла: просто старалась жить и хоть в чём-то найти стабильность и опору. <b>Внутри</b> это значило: «Просто будь рядом с собой, когда тебе плохо, даже если пока не умеешь себя поддерживать». <b>Снаружи</b> — небольшие привычки, которые были мне по силам: прочитать одну страницу по стоицизму, сделать минуту медитации, приготовить ужин брату к его возвращению из школы."}, {"yr": "2023", "sub": "Начинание", "lab": "С чем вышла", "out": ["Девять месяцев без пропусков ходила на мастермайнд по навыкам DBT.", "Успешно окончила школу приёмных родителей — это было первое длительное обучение, которое я довела до сертификата.", "В октябре прошла первый поток ЭЗ.", "Поучаствовала в реализации двух рабочих проектов — семинара по медотходам и семинара «План 2024». Мы получили за них восторженные отзывы, подписчиков и деньги.", "Восстановила дружбу с подругами, но перестала чего-то от них ожидать."], "inn": ["Мне было одиноко. Ехать к людям было стрессом: я не принимала себя, не знала, как себя вести, и думала, что со мной никто не захочет общаться.", "И всё же за девять месяцев я восстановила связь с собой, а в отношениях с родителями пришла от борьбы к благодарности.", "Я начала лучше справляться со своими эмоциональными реакциями и выбирать в моменте другие. Я увидела, что могу опереться на себя и поддержать себя в любом эмоциональном состоянии."], "exit": "понимание, что я могу меняться маленькими шагами.", "motto": "«Марина, если ты не поверишь в себя, то кто? Ты — Корабль Тесея»", "mottoText": "Решимости во мне стало чуть больше, и я решила, что хочу научиться справляться со своими разрушающими эмоциями. Я хотела, чтобы мне стало чуть легче. Я была эмоционально нестабильна и разрушена, но во мне начала зарождаться мысль: «Маленькими шагами можно себя перестроить». Я верила, что у меня есть шанс починить сломанные детальки в себе и измениться. Так я решила пойти на «Эмоциональную зрелость», пошла на тренинг и окончила школу приёмных родителей. Внутри становилось легче: я увидела, что во мне есть сила превращать разрушающие эмоции в свет. Но на материи я по-прежнему мало что делала, и мало что менялось.", "obs": "Первый поток ЭЗ: за год 102 наблюдения."}, {"yr": "2024", "sub": "Дисциплина делать", "lab": "С чем вышла", "out": ["С февраля по май три месяца лежала дома, не вставала и ни с кем не общалась.", "В мае переехала к родителям, а летом пошла работать менеджером по продажам, хотя всегда боялась звонить и не разбиралась в продажах. Я приходила к девяти и училась себя преодолевать.", "Взяла менторство по продажам, и оно помогло мне заметно улучшить результаты.", "По вечерам на энтузиазме начала заниматься ещё одним проектом — по журналам.", "Мы с Катей решили поставить цели и каждый месяц созванивались по ним.", "С лета начала закрывать кредиты.", "К середине осени я сильно устала, скатилась и почти перестала работать."], "obs": "Наблюдения от случая к случаю: за год 41.", "inn": ["Сильное напряжение. Фоном звучало «я не могу» и «я неудачница».", "Работа показала мне, что я мало что умею, хотя иногда бывали вспышки «у меня неплохо получается».", "Я очень переживала, что «у меня ничего нет» и мне не удаётся достигать целей. Меня сильно волновала материальная сторона жизни: деньги, впечатления, общение, работа."], "exit": "тяжёлое осознание, что на материи мне всё ещё очень тяжело даётся каждое действие.", "motto": "«Не доверяешь себе — доверься другим и посмотри, что будет»", "mottoText": "В начале года я не доверяла себе совсем: три месяца лежала дома, и внутри звучало «я не могу» и «я неудачница». Своих сил, чтобы встать, не было. Тогда я сделала ставку на других. Переехала к родителям и позволила им помочь. Согласилась на работу в продажах, хотя боялась звонить, и доверилась ментору по продажам. С Катей поставила цели и каждый месяц сверяла их по созвону. И посмотрела, что будет. А будет вот что: четыре месяца я работала в продажах, и результат был неплохой. Я убедилась, что, когда я опираюсь на людей, я делаю больше, чем одна, и мир не рушится. Внутри сдвинулось важное: я узнала, что могу опереться на других, когда пока не могу опереться на себя. Но к концу года пришло тяжёлое осознание: на материи мне всё ещё очень тяжело даётся каждое действие."}, {"yr": "2025", "sub": "Опора", "lab": "С чем вышла", "out": ["В январе я писала «этот год последний» и не пошла к подруге на день рождения: собрала подарки, оделась, но выйти так и не смогла.", "Ввела правило «одно впечатление в месяц» — и в итоге стала выходить куда-то минимум четыре раза в месяц, вытаскивая всех.", "Психолог сказала, что не может мне помочь, и по её рекомендации я обошла психотерапевтов. Мне выписали таблетки, но я не стала их пить.", "В феврале взяла девиз «Больше, чем 0». Начала с того, что просто приходила в офис и конспектировала пару страниц курса ЭЗ.", "Курс ЭЗ я законспектировала до конца, но поток не прошла.", "В августе закрыла все кредиты — я шла к этому год. Провела 56 тренировок.", "Перешла в отдел производства и выпустила журналы. Осенью были рабочий спринт, срыв и перевод в другой отдел.", "Регулярно писала ежемесячные ретроспективы, почти каждый день — ежедневные и старалась делать фото дня.", "Много общалась. Почти весь год много ездила на такси и болтала со всеми таксистами."], "inn": ["Год начался с большой усталости, депрессии и нежелания жить. Казалось, что ничего не получается. Мне было очень тяжело от того, что я не могу на себя положиться: в течение дня было сложно сделать хоть что-то, часто даже сходить в душ, и этот факт меня ранил.", "К концу года я перестала себя внутренне уничтожать. Я начала полагаться на себя не только эмоционально, но и в делах: увидела, что могу что-то сделать. Но была немного растеряна: что же делать дальше?", "Осенью я разобрала с ментором свой затык в работе и вышла на блок «я не могу». Когда я немного из него вышла, в реальности начало что-то получаться.", "Я взяла за принцип проживать каждый день как последний. Перед сном я «прощалась с жизнью» и весь год задавала себе вопрос: «Если я завтра не проснусь, хорошо ли я провела сегодняшний день?» Так я перестала с кем-то конфликтовать, чаще говорила людям, как ценю и люблю каждого из них, и не заканчивала день, если с кем-то оставалось недопонимание: сразу исправляла все негативные моменты."], "exit": "растерянность, способность действовать, внутренняя поддержка, близкие и тёплые отношения с людьми.", "motto": "«Больше, чем 0»", "mottoText": "Так родилось решение делать больше, чем ноль, — и я начала делать. Первым пунктом в моих планах стояло «встать, умыться и сделать хоть что-то». Хоть куда-нибудь выбраться в этом месяце, создать себе любое хорошее впечатление, жить так, будто у меня есть только сегодняшний день. Понемногу я стала каждый месяц куда-то выбираться, больше времени проводить с людьми, делать небольшие шаги к тому, что мне нравится, больше учиться, охотнее браться на работе за интересные задачи и ходить в спортзал.", "obs": "За год 60 наблюдений."}, {"yr": "2026", "sub": "Новая реальность", "lab": "С чем иду", "out": ["В январе был тяжёлый семейный кризис: папа сорвался.", "Потом — первый за годы отпуск, моя операция и рак у папы, сейчас у него ремиссия.", "В начале года я рискнула: поехала на встречу и познакомилась с новыми подругами.", "Сама организовала свой день рождения.", "Похудела на 20 кг.", "Третьего октября съехала от родителей. Закончила ремонт, который два года не мог сдвинуться с места и шёл очень трудно.", "Начинала обучения и не проходила их до конца."], "inn": ["Периодически устаю от количества дел и загруженности.", "Я научилась отделять эмоции от действий.", "Тяжёлых мыслей почти нет, люди рады проводить со мной время.", "Вернулись переживания из-за работы, отсутствия профессии и узких навыков, а ещё из-за того, что я много лет без отношений.", "И всё же я чувствую, что стала для людей поддержкой. Я взрослею — и внутренне, и внешне.", "Я по-прежнему растеряна в том, куда двигаться дальше, и хочу подтянуть сферы, которые долго стояли на месте. Два месяца я искала в себе, у людей и в заметках свой следующий девиз. В начале сентября я его нашла и почувствовала, что снова начинается «перестройка», как в 2023 году.", "Я устаю, мне тревожно, меня штормит, но глубоко внутри я чувствую себя в порядке."], "exit": "новые смыслы и желание снова перейти в «новую реальность».", "motto": "«Быть там, где результат вероятнее»", "mottoText": "В июле 2026 года я поняла, что хочу уже не просто движения, а конкретных, пусть и небольших достижений, побед и результатов. Я допустила мысль: «Возможно, у меня получится понемногу двигаться вперёд». Два месяца я искала новый девиз. Потом у психолога я поняла, что это значит <span class='under'>уметь двигаться через промежуточные результаты</span>."}];
+  var tl=document.getElementById("timeline");
+  function ul(a){return '<ul class="bl">'+a.map(function(x){return "<li>"+x+"</li>";}).join("")+"</ul>";}
+  P.forEach(function(p){
+    var el=document.createElement("article"); el.className="period";
+    el.innerHTML='<div class="yr">'+p.yr+'<span>'+p.sub+'</span></div><div class="body"><div class="two"><div><span class="lab">Внешне</span>'+ul(p.out)+(p.obs?'<div class="obsnote"><b>Наблюдения</b>'+p.obs+'</div>':'')+'</div><div><span class="lab">Внутри</span>'+ul(p.inn)+'</div></div><p><b>'+p.lab+':</b> '+p.exit+'</p>'+(p.motto?'<div class="dvz"><b>Девиз</b><span class="dvz-n">'+p.motto+'</span><p>'+p.mottoText+'</p></div>':'')+'</div>';
+    tl.appendChild(el);
+  });
+
+  /* ===== вкладки ===== */
+  var tabs=[].slice.call(document.querySelectorAll(".tab"));
+  function show(id,scroll){
+    tabs.forEach(function(t){var on=t.getAttribute("aria-controls")===id;t.setAttribute("aria-selected",on?"true":"false");t.tabIndex=on?0:-1;document.getElementById(t.getAttribute("aria-controls")).hidden=!on;});
+    try{localStorage.setItem("tochka-tab",id);}catch(e){}
+    if(scroll){window.scrollTo({top:0});}
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener("click",function(){show(t.getAttribute("aria-controls"),true);});
+    t.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="ArrowLeft"){var j=(i+(e.key==="ArrowRight"?1:-1)+tabs.length)%tabs.length;tabs[j].focus();tabs[j].click();}});
+  });
+  var start="bio", h=(location.hash||"").slice(1);
+  if(h&&document.getElementById(h)&&document.getElementById(h).getAttribute("role")==="tabpanel"){start=h;}
+  else{try{var s=localStorage.getItem("tochka-tab");if(s&&document.getElementById(s))start=s;}catch(e){}}
+  show(start,false);
+
+  /* ===== копирование ===== */
+  document.querySelectorAll("[data-copy]").forEach(function(b){
+    b.addEventListener("click",function(){
+      var pre=document.getElementById(b.getAttribute("data-copy")), msg=b.parentNode.querySelector(".copied");
+      function sel(){var r=document.createRange();r.selectNodeContents(pre);var w=window.getSelection();w.removeAllRanges();w.addRange(r);msg.textContent="Текст выделен — нажмите Ctrl+C";}
+      try{navigator.clipboard.writeText(pre.innerText).then(function(){msg.textContent="Скопировано";setTimeout(function(){msg.textContent="";},2500);},sel);}catch(e){sel();}
+    });
+  });
+
+  /* ===== типограф: неразрывные пробелы ===== */
+  (function typograph(root){
+    var NB=" ", L="[А-Яа-яЁёA-Za-z]";
+    var shortW=new RegExp("(^|[\\s\\u00A0(«„\"—–])("+L+"{1,2}|без|для|при|над|под|про|или)[ \\t\\n]+","gi");
+    var partic=/\s+(ли|же|ль|ж|бы|б)(?=[\s.,!?:;»)]|$)/gi;
+    var dash=/\s+([—–])(?=\s)/g;
+    var num=/(\d)\s+(?=[А-Яа-яЁё%№A-Za-z\d])/g;
+    function fix(t){
+      var o; do{o=t; t=t.replace(shortW,function(m,a,w){return a+w+NB;});}while(t!==o);
+      return t.replace(partic,NB+"$1").replace(dash,NB+"$1").replace(num,"$1"+NB);
+    }
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){
+      var p=n.parentNode; while(p&&p!==root){var tg=p.nodeName.toLowerCase(); if(tg==="script"||tg==="style"||tg==="svg"||tg==="pre"||tg==="textarea"){return NodeFilter.FILTER_REJECT;} p=p.parentNode;}
+      return /\S/.test(n.nodeValue)?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;}});
+    var list=[],n; while((n=w.nextNode())){list.push(n);}
+    list.forEach(function(n){var v=fix(n.nodeValue); if(v!==n.nodeValue){n.nodeValue=v;}});
+  })(document.querySelector(".wrap")||document.body);
+})();
+</script>
+
+</body>
+</html>
