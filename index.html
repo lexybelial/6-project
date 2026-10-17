@@ -65,6 +65,14 @@
   .bar{height:6px;border-radius:99px;background:var(--surface-2);overflow:hidden}
   .bar i{display:block;height:100%;width:0;background:var(--pearl);border-radius:99px;transition:width 1.4s cubic-bezier(.2,.7,.2,1)}
 
+  /* skills */
+  .skills{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .skill{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:28px 24px 26px;display:flex;flex-direction:column;gap:14px;min-height:240px}
+  .skill .num{font-family:"Unbounded";font-weight:300;font-size:44px;line-height:1;color:var(--pearl)}
+  .skill h3{font-family:"Unbounded";font-weight:300;font-size:clamp(18px,1.9vw,22px);line-height:1.25;margin-top:28px}
+  .skill p{color:var(--pearl);font-size:16px;line-height:1.45}
+  .skills-note{color:var(--muted);font-size:15px;max-width:62ch;margin-top:24px;padding-left:16px;border-left:1px solid var(--pearl)}
+
   /* goals */
   .head-row{display:flex;flex-direction:column;align-items:flex-start;gap:18px;margin-bottom:44px}
   .head-row p{color:var(--muted);max-width:60ch;font-size:16px}
@@ -172,6 +180,8 @@
   footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 
   @media (max-width:960px){
+    .skills{grid-template-columns:1fr}
+    .skill{min-height:0}
     .goals{grid-template-columns:repeat(2,1fr)} .goal.main{grid-column:span 2}
     .signals{grid-template-columns:1fr}
     .tabs{flex-direction:row;flex-wrap:wrap;gap:10px 20px}
@@ -208,6 +218,7 @@
   <div class="wrap">
     <a class="brand" href="#top">Новая реальность</a>
     <ul>
+      <li><a href="#skills">Навыки</a></li>
       <li><a href="#goals">Цели</a></li>
       <li><a href="#signals">Как пойму</a></li>
       <li><a href="#principles">Принципы</a></li>
@@ -247,6 +258,33 @@
 </header>
 
 <main>
+
+<section id="skills">
+  <div class="wrap">
+    <div class="head-row">
+      <h2>Ключевые навыки</h2>
+      <p>Три навыка, над которыми я работаю до марта 2027. На них держится весь проект.</p>
+    </div>
+    <div class="skills">
+      <article class="skill">
+        <span class="num" aria-hidden="true">1</span>
+        <h3>Завершать дела</h3>
+        <p>наиболее лёгким и эффективным способом</p>
+      </article>
+      <article class="skill">
+        <span class="num" aria-hidden="true">2</span>
+        <h3>Решать внутренние конфликты</h3>
+        <p>своевременно</p>
+      </article>
+      <article class="skill">
+        <span class="num" aria-hidden="true">3</span>
+        <h3>Принимать решения</h3>
+        <p>в течение 48 часов с твёрдой решимостью внутри</p>
+      </article>
+    </div>
+    <p class="skills-note">Для второго и третьего сначала нужно научиться видеть, где у меня конфликт и какое решение я не приняла. Пока я их не вижу, решать нечего.</p>
+  </div>
+</section>
 
 <section id="goals">
   <div class="wrap">
